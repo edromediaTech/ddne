@@ -77,7 +77,7 @@
 <script>
  import {mapGetters, mapActions } from 'vuex'
 export default {
-    // middleware: 'admin', 
+     middleware: 'inspecteur', 
       data () {
       return {
        nb_ecole:[],

@@ -9,7 +9,8 @@
       class="mt-4"
         cols="12"
         sm="6"
-        lg="6"
+        md="4"
+        lg="4"
       >
       
         <base-material-stats-card
@@ -26,10 +27,11 @@
       class="mt-4"
         cols="12"
         sm="6"
-        lg="6"
+         md="4"
+        lg="4"
       >
         <base-material-stats-card
-          color="info"
+          color="success"
           icon="mdi-account-plus"
           title="Elèves"
           :value="sumEleve"
@@ -37,15 +39,32 @@
           sub-text="Total elèves"
         />
       </v-col>
+      <v-col
+      class="mt-4"
+        cols="12"
+        sm="6"
+         md="4"
+        lg="4"
+      >
+        <base-material-stats-card
+          color="purple"
+          icon="mdi-account"
+          title="Enseignant"
+          :value="sumEnseignant"
+          sub-icon="mdi-account"
+          sub-text="Total enseignants"
+        />
+      </v-col>
 
       <v-col
       class="mt-4"
         cols="12"
         sm="6"
-        lg="6"
+         md="4"
+        lg="4"
       >
         <base-material-stats-card
-          color="success"
+          color="pink"
           title="Filles"
           icon="mdi-human-female"
           :value="sumfille"
@@ -58,17 +77,26 @@
       class="mt-4"
         cols="12"
         sm="6"
-        lg="6"
+         md="4"
+        lg="4"
       >
         <base-material-stats-card
-          color="pink"
+          color="primary"
           icon="mdi-human-male"
           title="Garcons"
           :value="sumgarcon"
           sub-icon="mdi-human-male"
           sub-text="Total garcons"
         />
-      </v-col>     
+      </v-col> 
+      <v-col cols="12"
+        sm="6"
+        md="4"
+        lg="4">
+         <span><center>Décision de fin d'année 2020-2021</center></span>
+        <apexchart width="220" type="radialBar" :options="chartDec" :series="seriesdec"></apexchart>
+   </v-col>
+       
     </v-row>
      <v-row>
       
@@ -83,30 +111,33 @@
           :width="7"
           color="info"
           indeterminate
-          class="ma-auto"
-        /></center>
-        <span>Statistique ecoles par district</span>
+          class="ma-auto"/>
+        </center>
+        
+        <span>Statistique écoles par district</span>
         <apexchart width="400" type="bar" :options="options" :series="series"></apexchart>
       </v-col>
     <v-col cols="12"
         sm="6"
         md="6"
+         
         lg="6">
-         <span>Pourcentage ecoles par district</span>
-        <apexchart width="400" type="donut" :options="chartOptions" :series="seriesd"></apexchart>
+        <span>Pourcentage élèves par secteur</span>
+        <apexchart width="350" type="donut" :options="chartOptions" :series="seriesd"></apexchart>
    </v-col>
+   
        <v-col cols="12"
         sm="6"
         md="6"
         lg="6">
-         <span>Pourcentage elèves par district</span>         
+         <span>Pourcentage élèves par district</span>         
         <apexchart width="400" type="pie" :options="chartOptionsl" :series="seriesl"></apexchart>
     </v-col>
       <v-col cols="12"
         sm="6"
         md="6"
         lg="6">
-       <span>Statistique elèves par district</span>
+       <span>Statistique élèves par district</span>
         <apexchart width="430" type="bar" :options="optionsl" :series="seriesel"></apexchart>
       </v-col>  
   </v-row>
@@ -119,12 +150,16 @@ export default {
       return {
        nb_ecole:[],
        donnees:[],
+       decisions:'',
         sumEleve: '',
         sumfille:'',  
         sumgarcon:'', 
         sumEcole:'',
+        sumEnseignant:'',
         eleved:'',
         ecoled:'',
+        percent:'',
+        secteur:{},
         visible:false,
          options: {
         chart: {
@@ -159,6 +194,12 @@ export default {
        chartOptionsl: {
        labels: []
         },
+         seriesdec: [],
+       chartDec: {
+       labels: []
+        },    
+       
+      
       }
   },
     mounted (){
@@ -172,15 +213,22 @@ export default {
                    await this.$axios.get('get-info').then(response =>{                      
                            this.donnees = response.data
                            this.sumEleve = response.data.eleves.toString()
+                           this.sumEnseignant = response.data.enseignants.toString()
                            this.sumEcole = response.data.ecoles.toString()
                            this.sumfille = response.data.filles.toString()
                            this.sumgarcon = (response.data.eleves - response.data.filles).toString()
                            this.ecoled = this.donnees.ecoledis
                            this.eleved = this.donnees.elevedis
+                           this.percent= this.donnees.deci.percent
+                           this.decisions = this.donnees.deci.dec
+                               
+                           this.secteur = response.data.secteur[0]
+                     
                             this.get_data_chart()
                            this.get_data_chart_donut()                        
                            this.get_data_chart_el()                        
-                            this.get_data_chart_donut_el()                        
+                            this.get_data_chart_donut_el()   
+                            this.get_dec_chart_donut()                    
                                                         
                    })
                    this.visible = false
@@ -188,17 +236,30 @@ export default {
         get_data_chart (){                            
           this.ecoled.forEach((el) => {                  
           this.options.xaxis.categories.push(el.nom)         
-          this.series[0].data.push(el.nb_ecole)   
+          this.series[0].data.push(el.nb_ecole)  
                              
           })              
       },
 
       get_data_chart_donut (){                 
-            this.ecoled.forEach((el) => {                  
-          this.chartOptions.labels.push(el.nom)
-          this.seriesd.push(el.nb_ecole) 
+                            
+          this.chartOptions.labels.push('Public')
+          this.seriesd.push(this.secteur.Public) 
                     
-          })              
+          this.chartOptions.labels.push('Privé')
+          this.seriesd.push(this.secteur.Prive) 
+                    
+                       
+      },
+      
+
+       get_dec_chart_donut (){  
+                      
+         // this.decisions.forEach((el) => {                  
+          this.chartDec.labels.push(this.decisions)
+         this.seriesdec.push(this.percent )
+                    
+         // })              
       },
         get_data_chart_el (){                            
           this.eleved.forEach((el) => {                  

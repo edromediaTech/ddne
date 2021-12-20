@@ -56,16 +56,25 @@
                             color="info"
                             indeterminate
                             /> 
-                            <v-col  cols="12"
+                            <v-col  v-if = "classes.length > 0" cols="12"
                             sm="6"
                             md="2">
                            <v-select                          
                             v-model="an"
                             :items="annee"
-                            label="Année" 
-                             @change="getEleves"                                              
+                            label="Année"                                                                         
                             ></v-select>                           
-                          </v-col>             
+                          </v-col> 
+                          <v-col  v-if = "an !==''" cols="12" md="2" sm="6">
+                              <v-btn
+                              fat
+                              small
+                              color="primary"
+                              @click="getEleves"
+                              >
+                              Executer
+                              </v-btn>
+                          </v-col>            
           </v-row>
        
            
@@ -428,9 +437,9 @@
 </template>
 <script>
 import tablePrint from '~/components/tablePrintPdf.vue';
-   export default {
-  components: { tablePrint },  
-      middleware: 'responsable',     
+   export default { 
+  components: { tablePrint },
+     middleware: 'ip',       
     data: () => ({
      valid: false,
       dialog: false,
@@ -453,7 +462,7 @@ import tablePrint from '~/components/tablePrintPdf.vue';
     zones: [],
     ecoles: [],
     annee: ['2020-2021', '2021-2022'],
-    an: '2020-2021',
+    an: '',
       search:'',
       msgrules:'Champ obligatoire',
       dialogDelete: false,
@@ -571,14 +580,15 @@ import tablePrint from '~/components/tablePrintPdf.vue';
             this.$refs.html2Pdf.generatePdf()
         },
        async get_zones(){
-             this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
-                   
+         this.visible = true
+             this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')                   
                     await this.$axios.get( 'zone-ip/'+localStorage.id).then( response => {
                        this.zones = response.data;
+                       this.visible = false
                   })
           },
 
-          getData (data, value){    
+          getData (data, value){   
                    
               if (data === 'zones'){
                    this.visible = true
@@ -643,21 +653,26 @@ import tablePrint from '~/components/tablePrintPdf.vue';
       },
 
       deleteEleve (eleve) {
-        this.$axios.delete('eleve-delete/' + eleve.classeleve_id +'|'+ eleve.id).then(res => {
-         
+        this.$axios.delete('eleve-delete/' + eleve.classeleve_id +'|'+ eleve.id).then(res => {         
           if (res.data.status === 1) { 
-            this.$notifier.showMessage({ content: 'Elève supprimé', color: 'success' })
-    
-            // this.$store.dispatch('set_snackbar', { showing: true, text: 'Elève supprimé' })
-            return true } 
+                this.$notifier.showMessage({ content: 'Elève supprimé', color: 'success' })    
+                 return true 
+                 } 
             else { 
            
             return false }
         })
       },
-      updateEleve (eleve) {            
-        this.$axios.patch( 'eleve-edit/' + eleve.classeleve_id  +'|'+ eleve.id, eleve).then(res => {
-           return true
+
+    updateEleve (eleve) {                  
+        this.$axios.patch( 'eleve-edit/' + eleve.classeleve_id  +'|'+ eleve.id+'|'+localStorage.anac, eleve).then(res => {
+            if (res.data.status === 1) { 
+            this.$notifier.showMessage({ content: 'Elève modifié', color: 'success' })       
+            return true 
+            } 
+          else{
+            this.$notifier.showMessage({ content: 'Echec', color: 'error' }) 
+          }
         })
       },
 
@@ -729,12 +744,12 @@ import tablePrint from '~/components/tablePrintPdf.vue';
         // if (!this.$refs.form.validate()) { this.loading = false; return false }
 
          if(!this.check_age(this.classe,this.editedItem.datenais)){
-            this.$notifier.showMessage({ content: 'La Date de naissance ne correspond pas a la classes!', color: 'error' })     
+            this.$notifier.showMessage({ content: 'La Date de naissance ne correspond pas a la classe!', color: 'error' })     
                   return false;
            } 
 
         if (this.editedIndex > -1) {
-          this.editedItem.ecole_id = localStorage.ecole_id
+          this.editedItem.ecole_id = this.ecole
           this.editedItem.classe_id = this.classe
           this.updateEleve(this.editedItem)
           Object.assign(this.eleves[this.editedIndex], this.editedItem)

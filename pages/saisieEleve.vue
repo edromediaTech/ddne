@@ -625,8 +625,15 @@ import tablePrint from '~/components/tablePrintPdf.vue';
 
       updateEleve (eleve) {  
         this.visible = true          
-        this.$axios.patch( 'eleve-edit/' + eleve.classeleve_id  +'|'+ eleve.id, eleve).then(res => {
-           return true          
+        this.$axios.patch( 'eleve-edit/' + eleve.classeleve_id  +'|'+ eleve.id+'|'+localStorage.anac, eleve).then(res => {
+        if (res.data.status === 1) { 
+            this.$notifier.showMessage({ content: 'Elève modifié', color: 'success' })            
+            return true 
+            } 
+          else { 
+            this.$notifier.showMessage({ content: 'Echec', color: 'error' })            
+            
+            }        
         })
          this.visible = false
       },

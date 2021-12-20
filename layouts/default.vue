@@ -240,9 +240,10 @@ export default {
             title: 'Stats Ecole',
             to: '/statEcoleSuper'})
 
-            // items.push({ icon: 'mdi-clipboard-outline',
-            // title: 'Liste Ecole',
-            // to: '/listeEcoleSuper'})
+              items.push({  icon: 'mdi-home',
+               title: 'Liste Ecole',
+               to: '/requeteEcole'})
+
             
              items.push({  icon: 'mdi-clipboard-outline',
                 title: 'Gestion Formation',
@@ -284,6 +285,14 @@ export default {
                items.push({  icon: 'mdi-account',
                title: 'Gestion Utilisateur',
                to: '/gestionUser'})
+
+                 items.push({  icon: 'mdi-home',
+               title: 'Liste Ecole',
+               to: '/requeteEcole'})
+
+                 items.push({  icon: 'mdi-human',
+               title: 'Liste Enseignant',
+               to: '/listeEnseignant'})
 
                items.push({  icon: 'mdi-check',
                title: 'Valider Responsable',

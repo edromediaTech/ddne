@@ -109,7 +109,7 @@
 import tablePrintEcole from '~/components/tablePrintEcole.vue'
    export default {
   components: { tablePrintEcole },
-     // middleware: 'admin',  
+    middleware: 'ip',  
     data (){ 
         return {
             dialog:false,          

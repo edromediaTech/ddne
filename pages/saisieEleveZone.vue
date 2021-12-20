@@ -32,27 +32,36 @@
                             :items="classes"
                             :rules="[v => !!v || msgrules]"
                             label="Classe"
-                            required
-                             @change="getEleves"
+                            required                            
                             ></v-select>                           
                           </v-col> 
-                                <v-progress-circular
+                               
+                            <v-col v-if = "classes.length > 0" cols="12"
+                            sm="6"
+                            md="2">
+                           <v-select                          
+                            v-model="an"
+                            :items="annee"
+                            label="Année"                                                                         
+                            ></v-select>                           
+                          </v-col>
+                           <v-progress-circular
                             v-show="visible"
                             :size="20"
                             :width="3"
                             color="info"
                             indeterminate
                             /> 
-                            <v-col  cols="12"
-                            sm="6"
-                            md="2">
-                           <v-select                          
-                            v-model="an"
-                            :items="annee"
-                            label="Année" 
-                             @change="getEleves"                                              
-                            ></v-select>                           
-                          </v-col>             
+                           <v-col  v-if = "an !==''" cols="12" md="2" sm="6">
+                              <v-btn
+                              fat
+                              small
+                              color="primary"
+                              @click="getEleves"
+                              >
+                              Executer
+                              </v-btn>
+                          </v-col>                
           </v-row>
        
            
@@ -410,7 +419,7 @@
 import tablePrint from '~/components/tablePrintPdf.vue';
    export default {
   components: { tablePrint },  
-     // middleware: 'responsable',     
+      middleware: 'inspecteur',     
     data: () => ({
      valid: false,
       dialog: false,
@@ -433,7 +442,7 @@ import tablePrint from '~/components/tablePrintPdf.vue';
     zones: [],
     ecoles: [],
     annee: ['2020-2021', '2021-2022'],
-    an: '2020-2021',
+    an: '',
       search:'',
       msgrules:'Champ obligatoire',
       dialogDelete: false,
@@ -542,9 +551,11 @@ import tablePrint from '~/components/tablePrintPdf.vue';
             this.$refs.html2Pdf.generatePdf()
         },
        async get_ecoles(){
+         this.loading = true
              this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
                     await this.$axios.get( '/select-liste-ecole-inspect/'+localStorage.inspect).then( response => {
                   this.ecoles = response.data;
+                  this.loading = false
                   })
           },
            async get_dept(){
@@ -619,9 +630,17 @@ import tablePrint from '~/components/tablePrintPdf.vue';
             return false }
         })
       },
-      updateEleve (eleve) {            
-        this.$axios.patch( 'eleve-edit/' + eleve.classeleve_id  +'|'+ eleve.id, eleve).then(res => {
-           return true
+     
+      updateEleve (eleve) { 
+                 
+        this.$axios.patch( 'eleve-edit/' + eleve.classeleve_id  +'|'+ eleve.id+'|'+localStorage.anac, eleve).then(res => {
+            if (res.data.status === 1) { 
+            this.$notifier.showMessage({ content: 'Elève modifié', color: 'success' })       
+            return true 
+            } 
+          else{
+            this.$notifier.showMessage({ content: 'Echec', color: 'error' }) 
+          }
         })
       },
 
@@ -698,7 +717,7 @@ import tablePrint from '~/components/tablePrintPdf.vue';
            } 
 
         if (this.editedIndex > -1) {
-          this.editedItem.ecole_id = localStorage.ecole_id
+          this.editedItem.ecole_id = this.ecole
           this.editedItem.classe_id = this.classe
           this.updateEleve(this.editedItem)
           Object.assign(this.eleves[this.editedIndex], this.editedItem)

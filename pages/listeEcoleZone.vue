@@ -93,7 +93,7 @@
  import TablePrintEcoleZone from '~/components/tablePrintEcoleZone.vue';
    export default {
    components: {TablePrintEcoleZone },   
-   //  middleware: 'inspect',  
+    middleware: 'inspecteur',  
     data (){
         return {
             

@@ -4,7 +4,15 @@
     fluid
     tag="section"
   >
-    <v-row >
+   <v-progress-circular
+          v-show="visible"
+          :size="70"
+          :width="3"
+          color="info"
+          indeterminate
+          class="ma-auto"
+        /> 
+    <v-row >      
        <v-col
       class="mt-4"
         cols="12"
@@ -37,7 +45,7 @@
           sub-text="Total elèves"
         />
       </v-col>
-
+ 
       <v-col
       class="mt-4"
         cols="12"
@@ -68,7 +76,8 @@
           sub-icon="mdi-human-male"
           sub-text="Total garcons"
         />
-      </v-col>     
+      </v-col>
+       
     </v-row>
    <!-- <v-row>
       
@@ -115,7 +124,7 @@
 <script>
  import {mapGetters, mapActions } from 'vuex'
 export default {
-  //  middleware: 'admin', 
+     middleware: 'ip', 
       data () {
       return {
        nb_ecole:[],
@@ -173,9 +182,9 @@ export default {
           },
             methods :{
                ...mapActions('dataUtil', [ 'getDistrictnameData']),
-              async get_ecole (){
-                this.visible = true
-             
+
+           async get_ecole (){
+                this.visible = true             
                 this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.authToken               
                    await this.$axios.get('get-info-ip/'+ localStorage.id ).then(response =>{  
                       this.getDistrictnameData(response.data.ecoles[0].nom) 

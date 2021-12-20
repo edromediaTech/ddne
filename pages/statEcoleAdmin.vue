@@ -12,8 +12,7 @@
   
      <v-data-table :headers="headers" :items="ecoles"  :search="search"
       class="elevation-1" :footer-props="{'items-per-page-options':[50, 100, -1]}">  
-          <template #top>
-          
+        <template #top>          
           <v-row class="mx-4 my-4">
                <v-progress-circular
                     v-show="visible"

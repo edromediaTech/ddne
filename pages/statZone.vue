@@ -98,7 +98,7 @@
 import tablePrintZone from '~/components/tablePrintZone.vue'
 export default {
   components: { tablePrintZone },
-    // middleware: 'admin', 
+     middleware: 'inspecteur', 
       data () {
       return {
           search:'',

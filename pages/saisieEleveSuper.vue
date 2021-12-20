@@ -87,8 +87,7 @@
                             :items="classes"
                             :rules="[v => !!v || msgrules]"
                             label="Classe"
-                            required
-                             @change="getEleves"
+                            required                           
                             ></v-select>                           
                           </v-col> 
                                 <v-progress-circular
@@ -98,15 +97,26 @@
                             color="info"
                             indeterminate
                             /> 
-                            <v-col  cols="12"
+                            <v-col  v-if = "classes.length > 0" cols="12"
                             sm="6"
                             md="2">
                            <v-select                          
                             v-model="an"
                             :items="annee"
                             label="Année" 
-                             @change="getEleves"                                              
+                                                                          
                             ></v-select>                           
+                          </v-col>
+                          <v-col  v-if = "an !==''" cols="12" md="2" sm="6">
+                              <v-btn
+                              class="mt-4"
+                              fat
+                              small
+                              color="primary"
+                              @click="getEleves"
+                              >
+                              Executer
+                              </v-btn>
                           </v-col>             
          
             </v-row>
@@ -465,7 +475,7 @@
 import tablePrintEleve from '~/components/tablePrintEleve.vue';
    export default {
   components: { tablePrintEleve },  
-   //   middleware: 'responsable',     
+      middleware: 'super',     
     data: () => ({
      valid: false,
       dialog: false,
@@ -488,7 +498,7 @@ import tablePrintEleve from '~/components/tablePrintEleve.vue';
     zones: [],
     ecoles: [],
     annee: ['2020-2021', '2021-2022'],
-    an: '2020-2021',
+    an: '',
       search:'',
       msgrules:'Champ obligatoire',
       dialogDelete: false,
@@ -598,9 +608,11 @@ import tablePrintEleve from '~/components/tablePrintEleve.vue';
             this.$refs.html2Pdf.generatePdf()
         },
        async get_dept(){
+            this.visible= true
              this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
             await this.$axios.get( 'departement').then( response => {
                   this.departements = response.data;
+                  this.visible= false
                   })
           },
           getData (data, value){
@@ -740,7 +752,7 @@ import tablePrintEleve from '~/components/tablePrintEleve.vue';
             // console.log(res.data.message)
           }
         })
-        this.loading = false
+        this.visible = false
       },
 
       editItem (item) {
@@ -784,11 +796,11 @@ import tablePrintEleve from '~/components/tablePrintEleve.vue';
       },
 
       save () {
-            this.loading = true
+            this.visible = true
         // if (!this.$refs.form.validate()) { this.loading = false; return false }
 
          if(!this.check_age(this.classe,this.editedItem.datenais)){
-            this.$notifier.showMessage({ content: 'La Date de naissance ne correspond pas a la classes!', color: 'error' })     
+            this.$notifier.showMessage({ content: 'La Date de naissance ne correspond pas a la classe!', color: 'error' })     
                   return false;
            } 
 

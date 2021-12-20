@@ -48,7 +48,7 @@
           v-text="icon"
         />
 
-        <div
+          <div
           v-if="text"
           class="text-h5 font-weight-thin"
           v-text="text"

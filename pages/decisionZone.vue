@@ -215,7 +215,7 @@ import tablePrintDecision from '~/components/tablePrintDecision.vue';
 
   export default {
   components: { tablePrintDecision },   
-    // middleware: 'inspect',  
+    middleware: 'inspecteur',  
     data: () => ({
       titre:'Décision de fin d\'année '+ localStorage.anac,
       dialog: false,

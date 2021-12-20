@@ -185,7 +185,8 @@
 <script>
   
     import {mapGetters} from 'vuex'
-  export default {    
+  export default { 
+    middleware: 'ip',    
     data () {
           return {
             valid: false,

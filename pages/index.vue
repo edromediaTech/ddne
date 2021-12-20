@@ -18,7 +18,7 @@
      <p class="text-justify">{{ education1 }}</p>     
      <p class="text-justify">{{ education2 }}</p>     
     </v-col>
-    <v-col class="mt-4" cols="12" sm="6" md="6" >
+    <v-col class="mt-4" cols="12" sm="6" md="4" >
         <base-material-stats-card
           color="orange"
           icon="mdi-home"
@@ -29,7 +29,7 @@
           sub-text="Total Ecoles"
         />
   </v-col>
-  <v-col cols="12" sm="6" md="6"   class="mt-4">
+  <v-col cols="12" sm="6" md="4"   class="mt-4">
   <base-material-stats-card
           color="info"
           icon="mdi-account"
@@ -39,6 +39,17 @@
           sub-text="Total elèves"
         />
   </v-col>
+  <v-col cols="12" sm="6" md="4"   class="mt-4">
+  <base-material-stats-card
+          color="pink"
+          icon="mdi-human"
+          title="Enseignants"
+          :value="sumEnseignant"
+          sub-icon="mdi-human"
+          sub-text="Total enseignants"
+        />
+  </v-col>
+  
   </v-row>
    <v-row>
       
@@ -94,6 +105,7 @@ export default {
         sumfille:'',  
         sumgarcon:'', 
         sumEcole:'',
+        sumEnseignant:'',
         page: 1,
          eleved:'',
         ecoled:'',
@@ -156,6 +168,7 @@ export default {
                    await this.$axios.get('get-info').then(response =>{                      
                            this.donnees = response.data
                            this.sumEleve = response.data.eleves.toString()
+                           this.sumEnseignant = response.data.enseignants.toString()
                            this.sumEcole = response.data.ecoles.toString()
                            this.sumfille = response.data.filles.toString()
                            this.sumgarcon = (response.data.eleves - response.data.filles).toString()

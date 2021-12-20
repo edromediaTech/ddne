@@ -51,7 +51,7 @@
                           </v-col>
                           <v-col   v-if = "zones.length > 0" cols="12"
                               sm="6"
-                              md="4">
+                              md="2">
                            <v-select
                          
                             v-model="zone"
@@ -95,9 +95,22 @@
                             :size="20"
                             :width="3"
                             color="info"
-                            indeterminate
-                          
-                          />            
+                            indeterminate                          
+                          />    
+                           <v-col  cols="12"
+                            sm="6"
+                            md="2">
+                            <v-btn 
+                            v-if="generateB"
+                            fat
+                            small
+                            class="mt-4"
+                            color="primary"
+                            @click="generate"
+                            >
+                              Générer
+                            </v-btn>
+                           </v-col>         
          
                              
               </v-row>
@@ -269,6 +282,7 @@ import tablePrintDecision from '~/components/tablePrintDecision.vue';
       viewPrint:false,
       visible: false,
       classe:null,
+      generateB:false,
       classes: [],
       options: [],
       eleves: [],
@@ -330,9 +344,7 @@ import tablePrintDecision from '~/components/tablePrintDecision.vue';
       
        },
 
-    methods: {
-
-      
+    methods: {      
       generateReport () {
            this.visible = true
            this.infoEcole = (this.ecoles.find(el => el.value === this.ecole)).text +' - '+ (this.classes.find(el => el.value === this.classe)).text
@@ -446,12 +458,16 @@ import tablePrintDecision from '~/components/tablePrintDecision.vue';
       },
 
       generate (){
-        const data = this.ecole_id+'|'+this.classe;
+        const data = this.ecole+'|'+this.classe+'|'+localStorage.anac;
     this.$axios.get('generate-formation/'+ data).then((response)=>{
       console.log(response.data);
-      if(response.data !== 0)
-      this.$notifier.showMessage({msg:response.data+" élève(s) traité(s) ", content: 'Elève enregistré avec succès', color: 'success' })
+      if(response.data !== 0){
+      this.$notifier.showMessage({content:response.data+' élève(s) traité(s) ',  color: 'success' })
           this.generateB = false;
+      }
+      else{
+        this.$notifier.showMessage({content:response.data+' echec ',  color: 'error' })
+      }
     });
 
   },
