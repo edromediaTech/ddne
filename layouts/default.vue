@@ -78,7 +78,7 @@
         @click.stop="fixed = !fixed"
       >
         <v-icon>mdi-minus</v-icon>
-      </v-btn> -->
+      </v-btn> -->     
       <v-toolbar-title v-text="title + anac" />
       <v-spacer />
       <!-- <v-btn
@@ -164,6 +164,7 @@ export default {
       miniVariant: false,
       right: true,
       rightDrawer: false,
+      showAnnee:'',
       title: 'DDENE ',
        ecole_name: '',
        zone_name: '',
@@ -184,6 +185,17 @@ export default {
        
               
       ];
+
+        if (this.user && this.user.user_level === 1){
+            items.push({  icon: 'mdi-clipboard-outline',
+            title: 'Gestion Formation',
+            to: '/saisieEleveOp' })
+
+            items.push({  icon: 'mdi-certificate',
+            title: 'Décision',
+            to: '/decisionOp' })
+        }
+
        if (this.user && this.user.user_level === 2){
             items.push({ icon: 'mdi-view-dashboard',
             title: 'Tableau de bord',
@@ -244,6 +256,9 @@ export default {
                title: 'Liste Ecole',
                to: '/requeteEcole'})
 
+              items.push({  icon: 'mdi-human',
+               title: 'Liste Enseignant',
+               to: '/listeEnseignant'})
             
              items.push({  icon: 'mdi-clipboard-outline',
                 title: 'Gestion Formation',
@@ -277,6 +292,10 @@ export default {
                  items.push({ icon: 'mdi-view-dashboard',
                  title: 'Tableau de bord',
                  to: '/dashAdmin'})
+
+                   items.push({ icon: 'mdi-graph',
+                 title: 'Stat Année Précédente',
+                 to: '/dashAnacPrec'})
 
                   items.push({  icon: 'mdi-book-open',
                  title: 'Suggestions',
@@ -318,8 +337,13 @@ export default {
   }
 
   }, 
-  mounted () {   
-         this.set_anac()
+  mounted () {
+      if(localStorage.getItem('anac') !== null)
+        this.set_anacP()      
+      else  
+        this.set_anac()
+        
+         
           this.get_district_name()
           this.get_zone_name()
       if (localStorage.authToken) {
@@ -332,7 +356,7 @@ export default {
   
   methods:{
      ...mapActions('auth', [ 'sendLogoutRequest', 'getUserData']),
-    ...mapActions('dataUtil', [ 'getAnacData','getDistrictnameData', 'getZonenameData']),
+     ...mapActions('dataUtil', [ 'getAnacData','getDistrictnameData', 'getZonenameData', 'getAnacDataP']),
   
 
       get_initial (name) {
@@ -370,7 +394,12 @@ export default {
       set_anac(){
         this.getAnacData()
          // this.title = 'DDNE '+ this.anac
+      },
+      set_anacP(){
+        this.getAnacDataP(localStorage.anac)
+         // this.title = 'DDNE '+ this.anac
       }
+      
   }
 }
 </script>

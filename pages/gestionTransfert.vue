@@ -137,7 +137,7 @@
                         </template>
                     </vue-html2pdf>
                   </client-only>
-             </v-btn>      
+             </v-btn>     
             
           </v-row>
           </template>

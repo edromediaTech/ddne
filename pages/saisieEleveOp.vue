@@ -86,9 +86,9 @@
                             v-model="classe"
                             :items="classes"
                             :rules="[v => !!v || msgrules]"
-                            label="Classe"                         
+                            label="Classe"
                             required
-                               @change="get_classe_id"                            
+                            
                             ></v-select>                           
                           </v-col> 
                                 <v-progress-circular
@@ -104,7 +104,7 @@
                            <v-select                          
                             v-model="an"
                             :items="annee"
-                            label="Année"
+                            label="Année" 
                                                                           
                             ></v-select>                           
                           </v-col>  
@@ -119,7 +119,6 @@
                               Executer
                               </v-btn>
                           </v-col>
-                          
          
             </v-row>
       <v-data-table
@@ -143,8 +142,6 @@
           
         <template #top>
           <v-row class="mx-4 my-4">
-            
-
              <v-col cols="12"
                 sm="6"        
                 md="4">
@@ -164,71 +161,22 @@
               vertical
             />
             <v-spacer />
-              
              
-          <!-- <v-col  v-if="classes.length > 0" cols="12"
-                sm="6"        
-                md="4">
-                <modal-decision :classe="classe" :ecole="ecole" :annee="an" />
-               
-             </v-col> -->
-             <download-excel
-              v-if="eleves.length > 0"
-                class="mx-2 mt-2"
-              :data="eleves"
-              title="Telecharger en excel"
-              name="Liste eleves"
-              header="La Liste des eleves"
-            >
-              <v-img
-                max-height="40"
-                max-width="40"
-                src="images/excel.png"
-              />
-            </download-excel>
-              <v-btn
-                    v-if="eleves.length > 0"
-                      class="mx-2 mt-2"
-                     fab                      
-                      x-small
-                      color="primary"
-                    @click=" generateReport"              
-                  >
-                  PDF
-                  <client-only>
-                     <vue-html2pdf   ref="html2Pdf"
-                      :show-layout="false"
-                      :float-layout="true"
-                      :enable-download="true"
-                      :preview-modal="false"
-                      :paginate-elements-by-height="1300"
-                      filename="Suped-DDENE"
-                      :pdf-quality="2"
-                      :manual-pagination="false"
-                      pdf-format="letter"
-                      pdf-orientation="landscape"
-                      pdf-content-width="1000px"        
-                      
-                        >
-                      <template slot="pdf-content"  class="sectpdf">                             
-                          <table-print-eleve :eleves="eleves" :texte="texte"  :formation-c="formationC"/>                                
-                       </template>
-                      </vue-html2pdf>
-                  </client-only>             
-                  </v-btn>
+                  <modal-recherche-eleve  class="mt-2 ml-4 mx-4 p-4" />
             <v-dialog
               v-model="dialog"
               max-width="500px"
             >
+          
               <template #activator="{ on, attrs }">
                 <v-btn
-                 :disabled ="classe == null"
+                  :disabled ="classe == null"
                   color="primary"
                   dark
                   fab                                        
                    x-small
                   title="Ajouter elèves"
-                    class="mx-2 mt-2 mb-2"
+                    class=" mt-2 mb-2 m-4 p-4"
                                     
                   v-bind="attrs"
                   v-on="on"                
@@ -236,6 +184,7 @@
                 >
                   <v-icon>mdi-plus</v-icon>
                 </v-btn>
+               
               </template>
               <v-card>
                 <v-card-title>
@@ -450,9 +399,7 @@
                 </v-card-actions>
               </v-card>
             </v-dialog>
-          
           </v-row>
-          
         </template>
         <template #[`item.actions`]="{ item }">
           <v-icon
@@ -483,25 +430,23 @@
   </v-container>
 </template>
 <script>
-// import ModalDecision from '~/components/modalDecision.vue';
-import tablePrintEleve from '~/components/tablePrintEleve.vue';
+// import tablePrintEleve from '~/components/tablePrintEleve.vue';
    export default {
-   components: { tablePrintEleve },  
-      middleware: 'admin',     
+ // components: { tablePrintEleve },  
+    middleware: 'operateur',     
     data: () => ({
      valid: false,
       dialog: false,
       visible: false,
       classe:null,
       classes: [],
-      eleves: [],      
-        info:{},
+      eleves: [],
        district: '',
     commune: '',
     texte:'',
     formationC:'',
     zone: '',
-    ecole: null,
+    ecole: '',
     niveau: '',
     loading:false,
     departement: '',
@@ -598,10 +543,7 @@ import tablePrintEleve from '~/components/tablePrintEleve.vue';
     mounted () {
       
       this.get_dept()
-      this.info.annee = localStorage.anac
-      // this.items[0].annee = localStorage.anac
-      // this.items[1].annee = this.annee_prec()
-          
+     
     },
 
     methods: {
@@ -621,11 +563,9 @@ import tablePrintEleve from '~/components/tablePrintEleve.vue';
       },
       generateReport () {
         this.texte =  (this.ecoles.find(el => el.value === this.ecole)).text +' - '+ (this.classes.find(el => el.value === this.classe)).text
-        this.formationC = 'Formation de classe ' + this.an
+        this.formationC = 'Formation de classe ' + localStorage.anac
             this.$refs.html2Pdf.generatePdf()
         },
-
-     
        async get_dept(){
              this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
             await this.$axios.get( 'departement').then( response => {
@@ -687,21 +627,8 @@ import tablePrintEleve from '~/components/tablePrintEleve.vue';
                   this.visible = false
                 })
                
-              }              
-              
+              }
              },
-
-          get_classe_id(){
-              this.info.classe = this.classe
-              this.info.ecole = this.ecole
-             
-            // if(classe > 1){
-            //   this.items[0].classe_id = classe - 1
-            //   this.items[1].classe_id = classe
-            //   alert(this.items[0].classe_id)
-            // }
-
-          },
         
       getEleves () {
         this.visible = true
@@ -779,12 +706,10 @@ import tablePrintEleve from '~/components/tablePrintEleve.vue';
         await this.$axios.post( 'eleve-store', this.editedItem).then(res => {
         
           if (res.data.status === 1) {
-            this.getEleves()
-             this.$notifier.showMessage({ content: 'Elève enregistré avec succès', color: 'success' })
-    
-                    // console.log('Don inséré!')
-          } else {
-            this.$notifier.showMessage({ content: 'Echec:', color: 'error' })
+              this.getEleves()
+              this.$notifier.showMessage({ content: 'Elève enregistré avec succès', color: 'success' })    
+        } else {
+            this.$notifier.showMessage({ content: 'Echec4', color: 'error' })
             // console.log(res.data.message)
           }
         })
@@ -830,7 +755,6 @@ import tablePrintEleve from '~/components/tablePrintEleve.vue';
                 
       },
 
-   
      
 
       save () {

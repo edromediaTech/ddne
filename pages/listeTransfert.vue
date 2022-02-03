@@ -14,7 +14,7 @@
       class="elevation-1" :footer-props="{'items-per-page-options':[50, 100, -1]}">  
           <template #top>          
            <v-row class="mx-4 my-4">           
-              <v-btn              
+              <v-btn   v-if="eleves.length > 0"            
                    class="mx-2 mt-2"
                      fab                                        
                       x-small

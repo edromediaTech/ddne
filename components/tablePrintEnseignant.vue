@@ -14,21 +14,24 @@
    <v-simple-table >
                 <thead>
                   <tr>
-                    <th>Ecole</th>
-                    <th>Adresse</th>                                  
-                    <th>Tél</th>                             
-                    <th>Directeur</th>  
-                     <th>Accès</th>                  
+                    <th>ID Enseignant</th>
+                    <th>Nom</th>                                  
+                    <th>Prénom</th>                             
+                    <th>Tel</th>  
+                    <th>Sexe</th>  
+                     <th>Nif</th>                  
                                          
                 </tr>
                </thead>
                 <tbody>                                   
-                  <tr v-for="lf in ecoles" :key="lf.id"  style="page-break-inside: avoid">
-                    <td>{{lf.Ecole}}</td>                                                        
-                    <td>{{lf.Adresse}}</td>               
-                    <td>{{lf.tel}}</td>                                         
-                    <td>{{lf.Nom_Directeur}} {{lf.Prenom_Directeur}}</td>                                         
-                    <td>{{lf.Acces}}</td>                                         
+                  <tr v-for="lf in enseignants" :key="lf.id"  style="page-break-inside: avoid">
+                    <td>{{lf.id}}</td>                                                        
+                    <td>{{lf.nom}}</td>               
+                    <td>{{lf.prenom}}</td>                                         
+                    <td>{{lf.telephone}}</td>                                         
+                    <td v-if="lf.sexe">M</td>
+                    <td v-else>F</td>                                       
+                    <td>{{lf.nif}}</td>                                         
                   </tr>                                                                                       
                 </tbody>
               </v-simple-table>
@@ -37,7 +40,7 @@
 </template>
 <script>
 export default {
-    props : {ecoles: { type: Array, default: () => []} , texte:{ type:String, default: ''}},
+    props : {enseignants: { type: Array, default: () => []} , texte:{ type:String, default: ''}},
       data (){
           return{
           n:0,

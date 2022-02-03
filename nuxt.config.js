@@ -80,12 +80,12 @@ export default {
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
  
    axios: {
-    // baseURL : 'http://ddne-back.loc/api/',
-     baseURL : 'https://base.suped-ddne.com/api/',
-   // credentials: false,
-     // proxy: true
-           
+     baseURL : 'http://ddne-back.loc/api/',
+     //  baseURL : 'https://base.suped-ddne.com/api/',
+      // credentials: false,
+      // proxy: true           
   },
+  
 //   proxy: {
 //    "/api/":{
 //   target: "http://base.suped-ddne.com/",    

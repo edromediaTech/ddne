@@ -22,6 +22,7 @@ export default {
     setAnacData (state, anac) {
       state.anacData = anac
     },
+   
     setEcolenameData (state, ecolename) {
       state.ecolenameData = ecolename
     },
@@ -42,6 +43,10 @@ export default {
         .then(response => {
           commit('setAnacData', response.data)
       })       
+    },
+   getAnacDataP({ commit }, annee) {     
+          commit('setAnacData', annee)
+           
     },
 
     getEcolenameData({commit}, ecolename){

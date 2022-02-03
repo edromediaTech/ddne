@@ -5,6 +5,25 @@
     tag="section"
   >
     <v-row >
+       <v-col  cols="12"
+                            sm="6"
+                            md="11">
+                           <v-select                          
+                            v-model="an"
+                            :items="annee"
+                            
+                               @change="change_anac(an)"                                           
+                            ></v-select>                           
+                          </v-col> 
+                          
+         <v-progress-circular
+          v-show="visible"
+          :size="20"
+          :width="3"
+          color="info"
+          indeterminate
+          class="ma-auto"/>
+       
        <v-col
       class="mt-4"
         cols="12"
@@ -49,7 +68,7 @@
         <base-material-stats-card
           color="purple"
           icon="mdi-account"
-          title="Enseignant"
+          title="Enseignants"
           :value="sumEnseignant"
           sub-icon="mdi-account"
           sub-text="Total enseignants"
@@ -89,12 +108,12 @@
           sub-text="Total garcons"
         />
       </v-col> 
-      <v-col cols="12"
+      <v-col  cols="12"
         sm="6"
         md="4"
         lg="4">
-         <span><center>Décision de fin d'année 2020-2021</center></span>
-        <apexchart width="220" type="radialBar" :options="chartDec" :series="seriesdec"></apexchart>
+         <span><center>Décision de fin d'année {{anac1}}</center></span>
+        <apexchart  v-if="show" width="220" type="radialBar" :options="chartDec" :series="seriesdec"></apexchart>
    </v-col>
        
     </v-row>
@@ -104,15 +123,7 @@
         sm="6"
         md="6"
         lg="6">
-        <center>
-         <v-progress-circular
-          v-show="visible"
-          :size="70"
-          :width="7"
-          color="info"
-          indeterminate
-          class="ma-auto"/>
-        </center>
+       
         
         <span>Statistique écoles par district</span>
         <apexchart width="400" type="bar" :options="options" :series="series"></apexchart>
@@ -144,6 +155,7 @@
   </v-container>
 </template>
 <script>
+import { mapActions, mapGetters } from 'vuex'
 export default {
     middleware: 'admin', 
       data () {
@@ -157,9 +169,13 @@ export default {
         sumEcole:'',
         sumEnseignant:'',
         eleved:'',
+        show :true,
         ecoled:'',
         percent:'',
+        anac1:'',
         secteur:{},
+         annee: ['2020-2021', '2021-2022'],
+      an: '',
         visible:false,
          options: {
         chart: {
@@ -170,7 +186,7 @@ export default {
         }
       },
       series: [{
-        name: '2020-2021',
+        name: '',
         data: []
       }], 
         optionsl: {
@@ -182,7 +198,7 @@ export default {
         }
       },
       seriesel: [{
-        name: '2020-2021',
+        name: '',
         data: []
       }],
 
@@ -202,16 +218,19 @@ export default {
       
       }
   },
-    mounted (){
-      
-        this.get_ecole()
-          },
-            methods :{
-              async get_ecole (){
-                this.visible = true
-                this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.authToken
-                   await this.$axios.get('get-info').then(response =>{                      
-                           this.donnees = response.data
+  computed:{
+        ...mapGetters('dataUtil', ['anac'])
+  },
+    mounted (){     
+          this.get_ecole()
+       },
+       methods :{
+              ...mapActions('dataUtil', [ 'getAnacDataP']),
+          async get_ecole (){
+                    this.visible = true
+                    this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.authToken
+                      await this.$axios.get('get-info/'+localStorage.anac).then(response =>{                      
+                              this.donnees = response.data
                            this.sumEleve = response.data.eleves.toString()
                            this.sumEnseignant = response.data.enseignants.toString()
                            this.sumEcole = response.data.ecoles.toString()
@@ -221,9 +240,9 @@ export default {
                            this.eleved = this.donnees.elevedis
                            this.percent= this.donnees.deci.percent
                            this.decisions = this.donnees.deci.dec
-                               
+                             this.anac1 = localStorage.anac  
                            this.secteur = response.data.secteur[0]
-                     
+
                             this.get_data_chart()
                            this.get_data_chart_donut()                        
                            this.get_data_chart_el()                        
@@ -233,6 +252,29 @@ export default {
                    })
                    this.visible = false
             },
+
+              async get_ecole_info (){
+                    this.visible = true
+                    this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.authToken
+                      await this.$axios.get('get-info/'+localStorage.anac).then(response =>{                      
+                              this.donnees = response.data
+                           this.sumEleve = response.data.eleves.toString()
+                           this.sumEnseignant = response.data.enseignants.toString()
+                           this.sumEcole = response.data.ecoles.toString()
+                           this.sumfille = response.data.filles.toString()
+                           this.sumgarcon = (response.data.eleves - response.data.filles).toString()
+                           this.ecoled = this.donnees.ecoledis
+                           this.eleved = this.donnees.elevedis
+                           this.percent= this.donnees.deci.percent
+                           this.decisions = this.donnees.deci.dec
+                             this.anac1 = localStorage.anac  
+                           this.secteur = response.data.secteur[0]
+                              })
+                   this.visible = false
+
+            },
+
+
         get_data_chart (){                            
           this.ecoled.forEach((el) => {                  
           this.options.xaxis.categories.push(el.nom)         
@@ -277,6 +319,23 @@ export default {
           })              
       },
 
+
+    async change_anac(annee){
+      this.visible = true
+      this.show = false
+      await this.$axios.get('set-anac/'+annee).then( res =>{
+         localStorage.removeItem('anac')    
+     
+        this.visible = false
+         this.$router.go()
+            this.getAnacDataP(annee)
+          localStorage.setItem('anac', annee)
+         
+          this.get_ecole_info()
+          this.show = true
+      })
+       
+    }
 
             }
         

@@ -61,10 +61,10 @@
                             required 
                              @change="getData('zones', donnee.zone)"                         
                             ></v-select>                           
-                          </v-col>                                    
+                          </v-col>           
                           
                           
-                           <v-col
+                       <v-col
                             cols="12"
                             sm="6"
                             md="4"
@@ -175,7 +175,7 @@
                       
                         >
                         <template slot="pdf-content"  class="sectpdf">                             
-                         <table-print-ecole :ecoles="ecoles" :texte="texte" />                             
+                         <table-print-enseignant :enseignants="enseignants" :texte="texte" />                             
                         </template>
                     </vue-html2pdf>
                   </client-only>             
@@ -209,7 +209,7 @@
 
 <script>
 export default {
-   // middleware: 'admin', 
+    middleware: 'super', 
         data: () => ({ 
             
          search:'',
@@ -278,15 +278,6 @@ export default {
                   this.visible = false
           },
 
-    // async get_enseignant(){
-    //           this.visible = true
-    //          this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
-    //         await this.$axios.get( 'get-enseignant').then( response => {
-    //               this.enseignants = response.data;
-    //               })
-    //               this.visible = false
-    //       },
-        
 
         async getReqEnseignant(){           
               this.visible = true
@@ -299,14 +290,14 @@ export default {
                 this.visible = false
           },
           
-          async get_text(){             
-             this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
-               const data = this.donnee.district+'|'+this.donnee.commune+'|'+this.donnee.zone+'|'+this.donnee.niveau
-                await this.$axios.get( 'get-text/'+ data).then( response => {
-                        this.texte = response.data;
-                  })
+          // async get_text(){             
+          //    this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
+          //      const data = this.donnee.district+'|'+this.donnee.commune+'|'+this.donnee.zone+'|'+this.donnee.niveau
+          //       await this.$axios.get( 'get-text/'+ data).then( response => {
+          //               this.texte = response.data;
+          //         })
                
-          },
+          // },
 
 
           getData (data, value){
@@ -371,7 +362,7 @@ export default {
               
              },
     generateReport () {
-       this.texte =  this.get_text()
+      this.texte =  ''
       
             this.$refs.html2Pdf.generatePdf()
         },

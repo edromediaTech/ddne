@@ -83,7 +83,8 @@ export default {
           ...mapActions('auth', ['sendRegisterRequest']),
 
       register () {
-         if (!this.$refs.form.validate()) { return false }
+        // this.$notifier.showMessage({ content: 'Cette fonctionnalité n\'est pas disponible pour le moment!', color: 'info' })
+        // if (!this.$refs.form.validate()) { return false }
          this.loading = true
         this.sendRegisterRequest({name: this.name, email:this.email, password:this.password}).then(() => {
            this.$notifier.showMessage({ content: 'Enregistrement réalisé avec succès!', color: 'success' })

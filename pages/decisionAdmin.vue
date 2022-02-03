@@ -466,7 +466,7 @@ import tablePrintDecision from '~/components/tablePrintDecision.vue';
           this.generateB = false;
       }
       else{
-        this.$notifier.showMessage({content:response.data+' echec ',  color: 'error' })
+        this.$notifier.showMessage({content:' echec ',  color: 'error' })
       }
     });
 

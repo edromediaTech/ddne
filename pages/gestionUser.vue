@@ -335,8 +335,7 @@ export default {
       },
 
        save () {
-            this.loading = true
-        
+            this.loading = true       
 
          if(this.editedItem.password !== this.editedItem.password1){
             this.$notifier.showMessage({ content: 'Password incorrect!', color: 'error' })     

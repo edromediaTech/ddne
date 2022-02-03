@@ -7,15 +7,12 @@
     <base-material-card
       icon="mdi-clipboard-outline"
       title="Gestion elèves"
-      class="px-5 py-3 mt-4"    >      
-     
-                         <v-row>                          
-                         
-                        
-                          <v-col   cols="12"
+      class="px-5 py-3 mt-4" >
+                 <v-row>              
+                      <v-col   cols="12"
                             sm="6"
                             md="5">
-                           <v-select                          
+                          <v-select                          
                             v-model="ecole"
                             :items="ecoles"
                             :rules="[v => !!v || msgrules]"
@@ -23,7 +20,7 @@
                             required
                             @change="getData('ecoles', ecole)"
                             ></v-select>                           
-                          </v-col>              
+                        </v-col>              
                           <v-col   v-if = "classes.length > 0" cols="12"
                             sm="6"
                             md="3">

@@ -12,7 +12,7 @@
                  <v-row> 
                        <v-col  cols="12"
                               sm="6"
-                              md="3">
+                              md="2">
                            <v-select                           
                             v-model="zone"
                             :items="zones"
@@ -25,7 +25,7 @@
                         
                           <v-col  v-if ="ecoles.length > 0" cols="12"
                             sm="6"
-                            md="6">
+                            md="5">
                            <v-select                        
                                 v-model="ecole"
                                 :items="ecoles"
@@ -45,9 +45,19 @@
                             :rules="[v => !!v || 'Item is required']"
                             label="Classe"
                             required
-                             @change="get_decision"
+                             @change="get_decision" 
                             ></v-select>                           
-                          </v-col>  
+                          </v-col>
+                          <v-col v-if="classe !== null"  cols="12" 
+                            sm="6"
+                            md="2">
+                           <v-select                          
+                            v-model="an"
+                            :items="annees"
+                            label="Année"
+                             @change="get_decision"                                          
+                            ></v-select>                           
+                          </v-col>   
                           <v-progress-circular
                             v-show="visible"
                             :size="20"
@@ -166,7 +176,7 @@
         </v-edit-dialog>
       </template>    
       
-      <template #[`item.moyenne`]="props" >
+      <!-- <template #[`item.moyenne`]="props" >
         <v-edit-dialog
           :return-value.sync="props.item.moyenne"
           @save="save"
@@ -186,7 +196,7 @@
             ></v-text-field>
           </template>
         </v-edit-dialog>
-      </template>
+      </template> -->
        <template #[`item.nordre`]="props" >
         <v-edit-dialog
           :return-value.sync="props.item.nordre"
@@ -218,7 +228,7 @@ import tablePrintDecision from '~/components/tablePrintDecision.vue';
   components: { tablePrintDecision },   
      middleware: 'ip',  
     data: () => ({
-      titre:'Décision de fin d\'année '+ localStorage.anac,
+      titre:'Décision de fin d\'année ',
       dialog: false,
       viewPrint:false,
       visible: false,
@@ -229,6 +239,7 @@ import tablePrintDecision from '~/components/tablePrintDecision.vue';
        district: '',
        texte:'',
        infoEcole:'',
+       infoAn:'',
     commune: '',
     zone: '',
     ecole: '',
@@ -240,6 +251,8 @@ import tablePrintDecision from '~/components/tablePrintDecision.vue';
     communes: [],
     zones: [],
     ecoles: [],
+    annees: [],
+      an: '',
       msgrules:'Champ obligatoire',
        decision:{'classeleve_id':0,'mention':'Select mention','moyenne':'0.00'},
        opts:['Admis', 'A refaire', 'Abandon', 'Admis ailleurs', 'A refaire ailleurs' ],
@@ -282,6 +295,7 @@ import tablePrintDecision from '~/components/tablePrintDecision.vue';
 
     mounted () {
       this.get_zones()
+      this. get_liste_annees()
       
        },
 
@@ -289,13 +303,21 @@ import tablePrintDecision from '~/components/tablePrintDecision.vue';
 
       generateReport () {
            this.visible = true
-            this.texte = 'Decision de fin d\'année '+localStorage.anac 
+            this.texte = 'Decision de fin d\'année '+this.an 
+            this.infoAn = (this.annees.find(el => el.value === this.an)).text 
             this.infoEcole =  (this.ecoles.find(el => el.value === this.ecole)).text +' - '+ (this.classes.find(el => el.value === this.classe)).text
             this.$refs.html2Pdf.generatePdf()
             this.visible = false
         },
 
+         async get_liste_annees(){
+             this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
+                    await this.$axios.get( 'liste-annee').then( response => {
+                  this.annees = response.data;
+                  })
+          },
          async get_zones(){
+           
              this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
                     await this.$axios.get( 'zone-ip/'+localStorage.id).then( response => {
                   this.zones = response.data;
@@ -380,14 +402,20 @@ import tablePrintDecision from '~/components/tablePrintDecision.vue';
 
  async get_decision (){    
          this.visible = true
-           await  this.$axios.get('get-decision/' + this.ecole+'|'+this.classe+'|'+ localStorage.anac).then((response)=>{
+         // alert( (this.annees.find(el => el.value === this.an)).text)
+           this.titre = 'Decision de fin d\'annee '
+           await  this.$axios.get('get-decision/' + this.ecole+'|'+this.classe+'|'+ this.an).then((response)=>{
                  console.log(response.data);
+                
                 this.visible = false
+                this.titre = this.titre + this.an
                   this.eleves =response.data;                  
                   this.loading =false;
                   this.showtable = true;
                   this.generateB = true;
                   })
+                  
+
   },
 
   update_decision (eleve){

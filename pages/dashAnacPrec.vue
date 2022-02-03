@@ -4,7 +4,18 @@
     fluid
     tag="section"
   >
-    <v-row >
+   
+       <h4>statistiques année académique {{anac}}
+         <v-progress-circular
+          v-show="visible"
+          :size="50"
+          :width="1"
+          color="info"
+          indeterminate
+          class="ma-auto"/>      
+       </h4>
+   
+    <v-row  class="mt-4">       
        <v-col
       class="mt-4"
         cols="12"
@@ -104,15 +115,7 @@
         sm="6"
         md="6"
         lg="6">
-        <center>
-         <v-progress-circular
-          v-show="visible"
-          :size="70"
-          :width="7"
-          color="info"
-          indeterminate
-          class="ma-auto"/>
-        </center>
+       
         
         <span>Statistique écoles par district</span>
         <apexchart width="400" type="bar" :options="options" :series="series"></apexchart>
@@ -120,8 +123,9 @@
     <v-col cols="12"
         sm="6"
         md="6"
+         
         lg="6">
-         <span>Pourcentage élèves par secteur</span>
+        <span>Pourcentage élèves par secteur</span>
         <apexchart width="350" type="donut" :options="chartOptions" :series="seriesd"></apexchart>
    </v-col>
    
@@ -140,13 +144,14 @@
         <apexchart width="430" type="bar" :options="optionsl" :series="seriesel"></apexchart>
       </v-col>  
   </v-row>
+  
   </v-container>
 </template>
 <script>
 export default {
-    middleware: 'super', 
+    middleware: 'admin', 
       data () {
-      return {
+      return {       
        nb_ecole:[],
        donnees:[],
        decisions:'',
@@ -159,8 +164,8 @@ export default {
         ecoled:'',
         percent:'',
         anac:'',
-        visible:false,
         secteur:{},
+        visible:false,
          options: {
         chart: {
           id: 'vuechart-example'
@@ -203,16 +208,15 @@ export default {
       }
   },
     mounted (){
-      
+     
         this.get_ecole()
           },
             methods :{
               async get_ecole (){
                 this.visible = true
                 this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.authToken
-                   await this.$axios.get('get-all-info').then(response =>{                      
+                   await this.$axios.get('get-info-prec').then(response =>{                      
                            this.donnees = response.data
-                           this.anac = localStorage.anac
                            this.sumEleve = response.data.eleves.toString()
                            this.sumEnseignant = response.data.enseignants.toString()
                            this.sumEcole = response.data.ecoles.toString()
@@ -222,7 +226,8 @@ export default {
                            this.eleved = this.donnees.elevedis
                            this.percent= this.donnees.deci.percent
                            this.decisions = this.donnees.deci.dec
-                          this.secteur = response.data.secteur[0]
+                             this.anac = response.data.anprec  
+                           this.secteur = response.data.secteur[0]
                      
                             this.get_data_chart()
                            this.get_data_chart_donut()                        
@@ -233,39 +238,35 @@ export default {
                    })
                    this.visible = false
             },
-        get_data_chart (){    
-          // this.series[0].name = localStorage.anac                             
+        get_data_chart (){                            
           this.ecoled.forEach((el) => {                  
           this.options.xaxis.categories.push(el.nom)         
-          this.series[0].data.push(el.nb_ecole)   
+          this.series[0].data.push(el.nb_ecole)  
                              
           })              
       },
 
-      get_data_chart_donut (){ 
-         this.chartOptions.labels.push('Public')
+      get_data_chart_donut (){                 
+                            
+          this.chartOptions.labels.push('Public')
           this.seriesd.push(this.secteur.Public) 
                     
           this.chartOptions.labels.push('Privé')
-          this.seriesd.push(this.secteur.Prive)                 
-          //   this.ecoled.forEach((el) => {                  
-          // this.chartOptions.labels.push(el.nom)
-          // this.seriesd.push(el.nb_ecole) 
+          this.seriesd.push(this.secteur.Prive) 
                     
-          // })              
+                       
       },
       
 
        get_dec_chart_donut (){  
-                     
+                      
          // this.decisions.forEach((el) => {                  
           this.chartDec.labels.push(this.decisions)
          this.seriesdec.push(this.percent )
                     
          // })              
       },
-        get_data_chart_el (){ 
-         // this.seriesel[0].name = localStorage.anac                            
+        get_data_chart_el (){                            
           this.eleved.forEach((el) => {                  
           this.optionsl.xaxis.categories.push(el.nom)         
           this.seriesel[0].data.push(el.nb_eleve)   
@@ -273,8 +274,7 @@ export default {
           })              
       },
 
-      get_data_chart_donut_el (){ 
-                     
+      get_data_chart_donut_el (){                 
             this.eleved.forEach((el) => {                  
           this.chartOptionsl.labels.push(el.nom)
           this.seriesl.push(el.nb_eleve) 

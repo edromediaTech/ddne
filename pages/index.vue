@@ -94,7 +94,9 @@
    </v-container>
 </template>
 <script>
+
   import Carousel from '../components/carousel'
+  
 export default {
   components: { Carousel },
     data () {
@@ -161,11 +163,11 @@ export default {
           this.get_ecole()
           },
     methods :{
-      
+               
              async get_ecole (){
                 this.visible = true
                 this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.authToken
-                   await this.$axios.get('get-info').then(response =>{                      
+                   await this.$axios.get('get-all-info').then(response =>{                      
                            this.donnees = response.data
                            this.sumEleve = response.data.eleves.toString()
                            this.sumEnseignant = response.data.enseignants.toString()

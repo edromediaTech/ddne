@@ -1,67 +1,32 @@
 <template>
-  <v-container
-    id="regular-tables"
-    fluid
-    tag="section"
-  >
-    <base-material-card
-      icon="mdi-certificate"
-      :title="titre"
-      class="px-5 py-3 mt-4" >      
-     
-                 <v-row> 
-                      
-                           
-                        
-                        
-                          <v-col   cols="12"
-                            sm="6"
-                            md="5">
-                           <v-select
-                          
-                            v-model="ecole"
-                            :items="ecoles"
-                            :rules="[v => !!v || 'Item is required']"
-                            label="Ecole"
-                            required
-                            @change="getData('ecoles', ecole)"
-                            ></v-select>                           
-                          </v-col>              
-                          <v-col  v-if = "classes.length > 0" cols="12"
-                            sm="6"
-                            md="3">
-                           <v-select
-                          
-                            v-model="classe"
-                            :items="classes"
-                            :rules="[v => !!v || 'Item is required']"
-                            label="Classe"
-                            required
-                             @change="get_decision"
-                            ></v-select>                           
-                          </v-col> 
-                           <v-col v-if="classe !== null"  cols="12" 
-                            sm="6"
-                            md="2">
-                           <v-select                          
-                            v-model="an"
-                            :items="annees"
-                            label="Année"
-                             @change="get_decision"                                          
-                            ></v-select>                           
-                          </v-col>     
-                          <v-progress-circular
-                            v-show="visible"
-                            :size="20"
-                            :width="3"
-                            color="info"
-                            indeterminate
-                          
-                          />            
-         
-                             
-              </v-row>
-  <v-data-table :headers="headers" :search="search" :items="eleves" :footer-props="{'items-per-page-options':[50, 100, -1]}">
+  <v-row justify="center">
+    <v-dialog
+      v-model="dialog"
+      persistent
+      max-width="auto"
+    >
+      <template #activator="{ on, attrs }">
+                    
+        <v-btn               
+          color="cyan" 
+          x-small
+          fab         
+          title="Classe precedente de l'annee precedente"
+          v-bind="attrs"
+          class="mx-1 mt-4"
+          v-on="on"
+        >
+        
+          <v-icon>mdi-arrow-left-bold</v-icon> 
+        </v-btn>
+      </template>
+       
+      <v-card>
+        
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-data-table :headers="headers" :search="search" :items="eleves" :footer-props="{'items-per-page-options':[50, 100, -1]}">
     
        <template #top>
          <v-row class="mx-4 my-4">
@@ -85,69 +50,42 @@
             />
                 <v-spacer />
              
-             <download-excel
-               v-if="eleves.length > 0"
-              :data="eleves"
-               class="mx-4 mt-1"
-              name="Decision de fin d'année"
-              header="La Liste des elèves"
-            >
-              <v-img
-                max-height="40"
-                max-width="40"
-                src="images/excel.png"
-              />
-            </download-excel>
+             <v-col  cols="12"
+                            sm="6"
+                            md="2">
+                            <v-btn 
+                            v-if="generateB"
+                            fat
+                            small
+                            class="mt-4 mx-4"
+                            color="primary"
+                            @click="generate"
+                            >
+                              Générer
+                            </v-btn>
+                           </v-col>
+                           <v-col class="mx-4 mt-4">
+               <menu-transfert  :classe="classe" :ecole="ecole" @onClickClasse="getClasse_emit($event)"/></v-col>
               
-               <v-btn 
-                  v-if="eleves.length > 0"               
-                    class="mx-2 mt-2"
-                     fab   
-                     title="Télécharger liste ecole en PDF"                   
-                     x-small
-                      color="info"
-                    @click=" generateReport"              
-                  >
-                  PDF
-                  <client-only>
-                     <vue-html2pdf   ref="html2Pdf"
-                      :show-layout="false"
-                      :float-layout="true"
-                      :enable-download="true"
-                      :preview-modal="false"
-                      :paginate-elements-by-height="1400"
-                      filename="Suped-Decision"
-                      :pdf-quality="2"
-                      :manual-pagination="false"
-                      pdf-format="legal"
-                      pdf-orientation="landscape"
-                      pdf-content-width="1350px"                  
-                      >
-                        <template slot="pdf-content"  class="sectpdf">                             
-                            <table-print-decision :eleves="eleves" :classe="classe" :texte="texte" :info-ecole="infoEcole"/>                             
-                        </template>
-                    </vue-html2pdf>
-                  </client-only>             
-                  </v-btn>
          </v-row>
        </template>
-       
-      <template #[`item.mention`]="props">
-        <v-edit-dialog
-          :return-value.sync="props.item.mention"
-          @save="save"
-          @cancel="cancel"
-          @open="open"
-          @close="close"
-        >
+
+        <template #[`item.mention`]="props">
+            <v-edit-dialog
+              :return-value.sync="props.item.mention"
+              @save="save"
+              @cancel="cancel"
+              @open="open"
+              @close="close"
+            >
           {{ props.item.mention }}
           <template #input>
-              <v-select      
-                v-model="props.item.mention"
-                :items="opts"
-                label="Select mention"           
+          <v-select      
+              v-model="props.item.mention"
+              :items="opts"
+              label="Select mention"
                 @change="update_decision(props.item)"
-              />
+            />
             </template>
         </v-edit-dialog>
       </template>
@@ -165,14 +103,14 @@
             v-model="props.item.annee"
             :items="getAnnees(1990,2021)"
             label="Selectionner Année"
-              @blur="setMention(props.item)"
+               @blur="setMention(props.item)"
               @change="update_decision(props.item)"
           />
             </template>
         </v-edit-dialog>
       </template>    
       
-      <!-- <template #[`item.moyenne`]="props" >
+      <template #[`item.moyenne`]="props" >
         <v-edit-dialog
           :return-value.sync="props.item.moyenne"
           @save="save"
@@ -187,14 +125,13 @@
                 label="Edit"    
                  :rules="[numberRule]"             
                 type="number"
-                 @keyup="checkinput(props.item)"                
+                 @keyup="checkinput(props.item)"
                   @blur="setMention(props.item)" 
             ></v-text-field>
           </template>
         </v-edit-dialog>
-      </template> -->
-
-      <template #[`item.nordre`]="props" >
+      </template>
+       <template #[`item.nordre`]="props" >
         <v-edit-dialog
           :return-value.sync="props.item.nordre"
           @save="save"
@@ -207,43 +144,58 @@
             <v-text-field           
               v-model="props.item.nordre"
                 label="Edit"    
-                 
+                             
                 type="number"                         
                 @blur="update_decision(props.item)" 
             ></v-text-field>
           </template>
         </v-edit-dialog>
       </template>
-      
-     
-      
     </v-data-table>
-    </base-material-card>
-  </v-container>
+             
+            
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            color="blue darken-1"
+            text
+            @click="dialog = false"
+          >
+            Cancel
+          </v-btn>
+
+       
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-row>
 </template>
 <script>
-import tablePrintDecision from '~/components/tablePrintDecision.vue';
-
+  
+  // import { checkTypeFile } from '../../../helpers/outils.js'
   export default {
-  components: { tablePrintDecision },   
-    middleware: 'inspecteur',  
+    props : { classe: { type: Number, default: null},  ecole: { type: Number, default: null},  
+              annee: { type: String, default: null}},
     data: () => ({
-      titre:'Décision de fin d\'année ',
+
+      titre:'Décision de fin d\'année '+ localStorage.anac,
       dialog: false,
       viewPrint:false,
       visible: false,
-      classe:null,
+      items:[{title:'Classe Precedente', classe:null, annee:''},{title:'Classe Courante', classe:null, annee:''}],
+    //  classe:null,
+      generateB:false,
       classes: [],
       options: [],
       eleves: [],
-         annees: [],
-      an: '',
        district: '',
        texte:'',
-       infoEcole:'',
     commune: '',
     zone: '',
-    ecole: '',
+   // ecole: '',
     niveau: '',
     loading:false,
     departement: '',
@@ -252,7 +204,8 @@ import tablePrintDecision from '~/components/tablePrintDecision.vue';
     communes: [],
     zones: [],
     ecoles: [],
-      
+    info:{},
+      infoEcole:'',
        decision:{'classeleve_id':0,'mention':'Select mention','moyenne':'0.00'},
        opts:['Admis', 'A refaire', 'Abandon', 'Admis ailleurs', 'A refaire ailleurs' ],
         sexeop:[{text:'Feminin',value:0},{text:'Masculin',value:1}],
@@ -262,14 +215,10 @@ import tablePrintDecision from '~/components/tablePrintDecision.vue';
       numberRule: v  => {
      // if (!v.trim()) return true;
       if (!isNaN(parseFloat(v)) && v > 0 && v <= 10) return true;      
-      return 'La valeur doit-être comprise entre 0 et 10';      
-    },
-      
-      pagination: {},
-     
-     
+      return 'La valeur doit-être comprise entre 0 et 10';
+      }
     }),
-    computed : {
+   computed : {
         headers (){
           const  headers= [
        
@@ -289,46 +238,101 @@ import tablePrintDecision from '~/components/tablePrintDecision.vue';
     
     created () {
       this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
+       this.items[0].title = 'Annee Precedente'
+      this.items[1].title = 'Annee Courante'
+       this.items[1].annee = localStorage.anac
+      this.items[0].annee = this.annee_prec()
+    
+     // if(this.classe > 1){
+              this.items[0].classe = this.classe - 1
+              this.items[1].classe =this.classe             
+         ///   }
       
     },
 
     mounted () {
-      this.get_ecoles()
-      this.get_liste_annees()
+     
+      this.get_dept()
+     
+      
        },
 
-    methods: {
-
+    methods: { 
+      
+      getClasse_emit (item) {        
+         this.get_decision_prec(this.ecole, item.classe, item.annee)
+      },
       generateReport () {
            this.visible = true
+           this.infoEcole = (this.ecoles.find(el => el.value === this.ecole)).text +' - '+ (this.classes.find(el => el.value === this.classe)).text
             this.texte = 'Decision de fin d\'année '+localStorage.anac 
-            this.infoEcole =  (this.ecoles.find(el => el.value === this.ecole)).text +' - '+ (this.classes.find(el => el.value === this.classe)).text
             this.$refs.html2Pdf.generatePdf()
             this.visible = false
         },
 
-        async get_liste_annees(){
+          annee_prec(){
+              const annees = localStorage.anac.split('-')
+              const an = annees[0]
+              const anprec = an - 1
+                const anv= (anprec+'-'+an) 
+                return anv
+              },
+
+         async get_dept(){
              this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
-                    await this.$axios.get( 'liste-annee').then( response => {
-                  this.annees = response.data;
+               await this.$axios.get( 'departement').then( response => {
+                  this.departements = response.data;
                   })
-          },
+             },
 
-
-         async get_ecoles(){
-             this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
-                    await this.$axios.get( '/select-liste-ecole-inspect/'+localStorage.inspect).then( response => {
+           getData (data, value){
+              if (data === 'departements'){
+                 this.communes =[]
+                 this.zones = []
+                  this.ecoles = []                 
+                  this.niveaux = []
+                   this.visible = true
+                   this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
+                this.$axios.get('get-departement/'+ this.departement).then( response => {
+                  this.districts = response.data;
+                   this.visible = false
+                })                 
+              }
+              if (data === 'districts'){
+                  this.zones = []
+                  this.ecoles = []
+                  this.niveaux = []
+                   this.visible = true
+                   this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
+                 this.$axios.get('get-district/'+ this.district).then( response => {
+                  this.communes = response.data;
+                   this.visible = false
+                })
+                 
+              }
+              if (data === 'communes'){
+                  this.ecoles = []
+                  this.niveaux = []
+                   this.visible = true
+                   this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
+                 this.$axios.get('get-commune/'+ this.commune).then( response => {
+                  this.zones = response.data;
+                   this.visible = false
+                 })
+              }
+              if (data === 'zones'){
+                  this.niveaux = []
+                   this.visible = true
+                   this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
+                 this.$axios.get('get-zone/'+ this.zone).then( response => {
                   this.ecoles = response.data;
-                  })
-          },
-
-           getData (data, value){         
-             
-             
+                   this.visible = false
+                 })
+              }
               if (data === 'ecoles'){
                  this.visible = true
                  this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
-                 this.$axios.get('get-classe/'+1).then( response => {                   
+                 this.$axios.get('get-classe/'+ -1).then( response => {                   
                  this.classes = response.data;
                   this.visible = false
                 })
@@ -379,24 +383,36 @@ import tablePrintDecision from '~/components/tablePrintDecision.vue';
       },
 
       generate (){
-        const data = this.ecole_id+'|'+this.classe;
-    this.$axios.get('generate-formation/'+ data).then((response)=>{
+          const data = this.ecole+'|'+this.classe+'|'+this.annee_prec();
+    this.$axios.get('generate-formation-prec/'+ data).then((response)=>{
       console.log(response.data);
-      if(response.data !== 0)
-      this.$notifier.showMessage({msg:response.data+" élève(s) traité(s) ", content: 'Elève enregistré avec succès', color: 'success' })
+      if(response.data !== 0){
+      this.$notifier.showMessage({content:response.data+' élève(s) traité(s) ',  color: 'success' })
           this.generateB = false;
+      }
+      else{
+        this.$notifier.showMessage({content:' echec ',  color: 'error' })
+      }
     });
 
   },
 
  async get_decision (){    
          this.visible = true
-          this.titre = 'Decision de fin d\'annee '
-           await  this.$axios.get('get-decision/' + this.ecole+'|'+this.classe+'|'+ this.an).then((response)=>{
+           await  this.$axios.get('get-decision/' + this.ecole+'|'+this.classe+'|'+ localStorage.anac).then((response)=>{
                  console.log(response.data);
                 this.visible = false
-                  this.eleves =response.data;  
-                   this.titre = this.titre + this.an                
+                  this.eleves =response.data;                  
+                  this.loading =false;
+                  this.showtable = true;
+                  this.generateB = true;
+                  })
+  },
+ async get_decision_prec (ec, cl, an){    
+        
+           await  this.$axios.get('get-decision/' + ec+'|'+cl+'|'+an).then((response)=>{
+                 console.log(response.data);               
+                  this.eleves =response.data;                  
                   this.loading =false;
                   this.showtable = true;
                   this.generateB = true;
@@ -474,20 +490,8 @@ import tablePrintDecision from '~/components/tablePrintDecision.vue';
     close() {
       console.log("Dialog closed");
     },
-
-      getClasses () { 
-          const responsable = localStorage.getItem('niveau');  
-          this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')           
-        this.$axios.get('get-classe-responsable/'+ responsable).then(res => {
-          this.classes = res.data         
-        })
-      },
-     
     }
+
+
   }
 </script>
-<style scoped>
-.v-progress-circular {
-  margin: 1rem;
-}
-</style>

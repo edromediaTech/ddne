@@ -322,7 +322,7 @@
                         <v-text-field
                           v-model="editedItem.tel_persrep"
                           label="Tel Responsable"
-                          type="number"
+                         
                            maxlength="15"
                         />
                       </v-col>
@@ -530,7 +530,7 @@ import tablePrint from '~/components/tablePrintPdf.vue';
             if(res.data === 1){
             this.transferts = this.selected
               this.$notifier.showMessage({ content: 'Elève transferé', color: 'success' }) 
-               this.$router.push({ name: 'gestionTransfert' })  
+               this.$router.push({ name: 'gestionTransfert' }) 
             
             }
               this.visible = false
