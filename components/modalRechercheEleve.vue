@@ -6,16 +6,14 @@
       max-width="auto"
     >
     
-      <template #activator="{ on, attrs }">
-                   
+      <template #activator="{ on, attrs }">                   
         <v-btn   
          class="mb-2"            
           color="cyan" 
           x-small
           fab         
           title="Recherche élève"
-          v-bind="attrs"
-         
+          v-bind="attrs"         
           v-on="on"
         >
         
@@ -23,9 +21,17 @@
         </v-btn>
       </template>
        <v-card>
-            <h3 class="px-4 mt-4 mx-4 py-4">Recherche et transfert élèves</h3>
+            <v-row>
+              <v-col class="" cols="12" md="10" sm="6">
+            <h3 class="px-4 mt-4 mx-4 py-4"> <v-icon>mdi-magnify</v-icon> Recherche et transfert élèves</h3>
+              </v-col>
+             <v-col  cols="12" md="2" sm="6">
+                 <v-icon class="mt-4 mx-4 px-4" color="primary" title="Fermer" @click="cancel">mdi-close</v-icon>
+             </v-col>
+            </v-row>
+          
        <v-row class="px-4">
-            <v-col    cols="12"    sm="6"   md="3">
+            <v-col v-if="abandons.length === 0 && expulses.length === 0"   cols="12"    sm="6"   md="3">
                 <v-select                            
                     v-model="el"
                     :items="donnees"
@@ -36,6 +42,35 @@
                     @change="showField"
                 ></v-select>                
               </v-col>
+                <v-col v-if="abandons.length === 0 && eleves.length === 0 && el.length === 0" cols="12"
+                            sm="6"
+                            md="3">
+                            <v-btn                             
+                            fat
+                            small
+                            title="Eleves expulsés"
+                            class="mt-4 mx-2"
+                            color="primary"
+                            @click="get_expulse"
+                            >
+                              Expulsés
+                            </v-btn>
+                           </v-col>
+                      <v-col  v-if="eleves.length === 0 && expulses.length === 0 && el.length === 0" cols="12"
+                            sm="6"
+                            md="3">
+                            <v-btn                             
+                            fat
+                            small
+                            title="Eleves abandonnés"
+                            class="mt-4 mx-4"
+                            color="primary"
+                            @click="get_abandon"
+                            >
+                              Abandons
+                            </v-btn>
+                           </v-col>
+
                       <v-col v-if="nom"
                         cols="12"
                         sm="6"
@@ -147,7 +182,7 @@
                             color="primary"
                             @click="rechercheEleve"
                             >
-                              Executer
+                              Executer 
                             </v-btn>
                            </v-col>
                             </v-row>
@@ -156,10 +191,10 @@
                        
                     <v-container>
                         <v-row>
-                           <v-col v-if="selected.length > 0"
+                           <v-col v-if="selected.length > 0 || selAb.length >0 || selEx.length >0 "
                            cols="12"
                               sm="6"
-                              md="3">
+                              md="2">
                            <v-select                            
                             v-model="departement"
                             :items="departements"
@@ -173,7 +208,7 @@
                            <v-col  v-if = "communes.length > 0"
                            cols="12"
                             sm="6"
-                               md="3">
+                               md="2">
                            <v-select
                            
                             v-model="commune"
@@ -201,7 +236,7 @@
                             sm="6"
                             md="1">
                             <v-btn 
-                            v-if="ecole !== ''"
+                            v-if="ecole !== '' && selected.length > 0"
                             fat
                             small
                             title="Transferer"
@@ -212,13 +247,47 @@
                               <v-icon>mdi-login</v-icon>
                             </v-btn>
                            </v-col>
+                           <!-- select abandon -->
+                            <v-col  cols="12"
+                            sm="6"
+                            md="1">
+                            <v-btn 
+                            v-if="ecole !== '' && selAb.length > 0"
+                            
+                            fat
+                            small
+                            title="Transferer"
+                            class="mt-4 mx-4 px-4"
+                            color="primary"
+                            @click="abandon_store"
+                            >
+                              <v-icon>mdi-login</v-icon>
+                            </v-btn>
+                           </v-col>
+                           <!-- select expulse -->
+                            <v-col class="mx-4" cols="12"
+                            sm="6"
+                            md="1">
+                            <v-btn 
+                            v-if="ecole !== '' && selEx.length > 0"
+                            fat
+                            title="Réintegrer élève"
+                            small
+                            class="mt-4 mx-4"
+                            color="primary"
+                            @click="expulse_store"
+                            >
+                              <v-icon>mdi-login</v-icon>
+                            </v-btn>
+                           </v-col>
                </v-row>
             <v-row>
-              <v-data-table  v-model="selected" :headers="headers" :search="search" :items="eleves" 
+              <v-data-table  v-if="eleves.length > 0"  v-model="selected" :headers="headers" :search="search" :items="eleves" 
               show-select single-select :footer-props="{'items-per-page-options':[50, 100, -1]}">
     
        <template #top>
          <v-row class="mx-4 my-4">
+             <v-spacer />
              <v-col cols="12"
                   sm="6"        
               md="4">
@@ -231,19 +300,55 @@
         hide-details
       ></v-text-field>
              </v-col>
-                <v-divider
-                 v-if="eleves.length > 0"
-              class="mx-4 mt-1"
-              inset
-              vertical
-            />
-                <v-spacer />
-                         
                
          </v-row>
        </template> 
     
-    </v-data-table>            
+    </v-data-table>
+      <v-data-table  v-if="expulses.length > 0" v-model="selEx" :headers="headers" :search="search" :items="expulses" 
+              show-select single-select :footer-props="{'items-per-page-options':[50, 100, -1]}">
+              
+       <template #top>
+         <v-row class="mx-4 my-4">
+             <v-spacer />
+             <v-col cols="12"
+                  sm="6"        
+              md="4">
+            <v-text-field
+             v-if="expulses.length > 0"
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Search"
+              single-line
+              hide-details
+            ></v-text-field>
+             </v-col>
+               
+         </v-row>
+       </template>
+      </v-data-table>            
+      <v-data-table  v-if="abandons.length > 0" v-model="selAb" :headers="headers" :search="search" :items="abandons" 
+              show-select single-select :footer-props="{'items-per-page-options':[50, 100, -1]}">
+              
+       <template #top>
+         <v-row class="mx-4 my-4">
+             <v-spacer />
+             <v-col cols="12"
+                  sm="6"        
+              md="4">
+            <v-text-field
+             v-if="abandons.length > 0"
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Search"
+              single-line
+              hide-details
+            ></v-text-field>
+             </v-col>
+               
+         </v-row>
+       </template>
+      </v-data-table>            
             
             </v-row>
           </v-container>
@@ -253,9 +358,9 @@
           <v-btn
             color="blue darken-1"
             text
-            @click="dialog = false"
+            @click="cancel"
           >
-            Cancel
+            Fermer
           </v-btn>
 
        
@@ -277,6 +382,8 @@
       viewPrint:false,
       visible: false,
       selected: [],
+      selAb: [],
+      selEx: [],
       generateB:false,
       classes: [],
       options: [],
@@ -298,6 +405,8 @@
     communes: [],
     zones: [],
     ecoles: [],
+    abandons:[],
+    expulses:[],
     info:{},
       infoEcole:'',
      nom:false, prenom:false, datenais:false, 
@@ -350,14 +459,7 @@
     methods: { 
            
 
-        //   annee_prec(){
-        //       const annees = localStorage.anac.split('-')
-        //       const an = annees[0]
-        //       const anprec = an - 1
-        //         const anv= (anprec+'-'+an) 
-        //         return anv
-        //       },
-
+     
         async rechercheEleve(){
             this.visible = true
              this.eleves =[]
@@ -380,19 +482,63 @@
                   
                    if(response.data === 1){
                         this.eleves = this.filtrerEleve(this.selected[0].id)
-                        this.$notifier.showMessage({ content: 'Transfert réussi!', color: 'success' }) 
+                        this.$notifier.showMessage({ content: 'Transfert réussi!', color: 'success' })
+                      
+                    
                    }
                    else
                    this.$notifier.showMessage({ content: 'Transfert echoué', color: 'echec' })  
-                  this.visible = ''
-                   this.el = []
-                   this.eleves = []
+                  this.visible = false
+                  
+                  })
+        },
+
+        async expulse_store(){
+            this.visible = true
+                      
+                  this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
+               await this.$axios.post( 'expulse-store/'+ (this.selEx[0].id +'|'+ this.ecole +'|'+localStorage.anac+'|'+this.selEx[0].expulse_id+'|'+this.selEx[0].decision_id+'|'+this.selEx[0].mention)).then( response => {
+                                    
+                   if(response.data === 1){
+                        this.eleves = this.filtrerExpulse(this.selEx[0].id)
+                        this.$notifier.showMessage({ content: 'Transfert réussi!', color: 'success' })                  
+                    
+                   }
+                   else
+                   this.$notifier.showMessage({ content: 'Transfert echoué', color: 'echec' })  
+                  this.visible = false
+                  
+                  })
+        },
+
+        async abandon_store(){
+            this.visible = true
+                         
+                  this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
+               await this.$axios.post( 'abandon-store/'+ (this.selAb[0].id +'|'+ this.ecole +'|'+localStorage.anac+'|'+this.selAb[0].abandon_id)).then( response => {
+                  
+                    if(response.data === 1){
+                        this.eleves = this.filtrerAbandon(this.selAb[0].id)
+                        this.$notifier.showMessage({ content: 'Transfert réussi!', color: 'success' })                     
+                    
+                   }
+                   else
+                   this.$notifier.showMessage({ content: 'Transfert echoué', color: 'echec' })  
+                  this.visible = false
+                  
                   })
         },
 
         filtrerEleve(id){
-            const el = this.eleves.filter(item => item.id !== id)
-        
+            const el = this.eleves.filter(item => item.id !== id)              
+            return el
+        },
+        filtrerExpulse(id){
+            const el = this.expulses.filter(item => item.id !== id)              
+            return el
+        },
+        filtrerAbandon(id){
+            const el = this.abandons.filter(item => item.id !== id)              
             return el
         },
 
@@ -421,23 +567,45 @@
                 }   
         },
 
+         async get_expulse(){
+            this.visible = true
+             this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
+               await this.$axios.get( 'liste-expulse').then( response => {
+                  this.expulses = response.data;
+                  this.visible =  false
+                  })
+             },
+         async get_abandon(){
+            this.visible = true
+             this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
+               await this.$axios.get( 'liste-abandon').then( response => {
+                  this.abandons = response.data;
+                  this.visible =  false
+                  })
+             },
          async get_dept(){
+            this.visible = true
              this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
                await this.$axios.get( 'departement').then( response => {
                   this.departements = response.data;
+                   this.visible = false
                   })
              },
 
          async get_com(){
+            this.visible = true
              this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
                await this.$axios.get( 'get-commune-dept/'+this.departement).then( response => {
                   this.communes = response.data;
+                   this.visible = false
                   })
              },
          async get_ecole_com(){
+            this.visible = true
              this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
                await this.$axios.get( 'get-ecole-commune/'+this.commune).then( response => {
                   this.ecoles = response.data;
+                   this.visible = false
                   })
              },
 
@@ -498,6 +666,13 @@
   
 
 
+   //   annee_prec(){
+        //       const annees = localStorage.anac.split('-')
+        //       const an = annees[0]
+        //       const anprec = an - 1
+        //         const anv= (anprec+'-'+an) 
+        //         return anv
+        //       },
 
       
         
@@ -538,10 +713,28 @@
       this.snackText = "Data saved";
     },
     cancel() {
-      this.snack = true;
-      this.snackColor = "error";
-      this.snackText = "Canceled";
-    },
+        this.nom = false 
+              this.prenom = false 
+              this.prenom_mere = false 
+              this.datenais = false
+              this.selected = []
+              this.selAb = []
+              this.selEx =[]
+              this.eleves = []
+              this.abandons=[]
+              this.expulses =[]
+              this.departement = ''
+              this.communes=[]
+              this.ecoles =[]
+              this.ecole = ''
+              this.el = []
+               this.editedItem.nom=''
+                 this.editedItem.prenom= ''
+                 this.editedItem.prenom_mere=''
+                  this.editedItem.datenais=''
+        this.dialog = false
+        },
+
     open() {
       this.snack = true;
       this.snackColor = "info";
