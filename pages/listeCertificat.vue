@@ -44,7 +44,7 @@
             </v-row>
               <!-- @beforeDownload="beforeDownload($event)"  -->
             
-      <v-data-table
+      <v-data-table v-if="eleves.length > 0"
         v-model="selected"
         :headers="headers"
          :items="eleves"
@@ -183,7 +183,32 @@
             Reset
           </v-btn>
         </template>
-      </v-data-table>       
+      </v-data-table> 
+       <v-data-table
+        v-model="selected"        :headers="headerSec"    :items="ecoles"       :search="search" 
+         :footer-props="{'items-per-page-options':[ 50, 100, -1]}"
+          sort-by="nom"
+          class="elevation-1"
+      >
+        <template #top>
+          
+          <v-row class="mx-4 my-4">
+        <download-excel             
+                v-if="ecoles.length > 0"
+                class="mx-2 mt-1"
+              :data="ecoles"
+              name="Liste eleves"
+              header="La Liste des ecoles ayant le niveau secondaire"
+            >
+              <v-img
+                max-height="40"
+                max-width="40"
+                src="images/excel.png"
+              />
+            </download-excel>
+          </v-row>
+        </template>
+       </v-data-table>      
     </base-material-card>
   </v-container>
 </template>
@@ -201,6 +226,7 @@ import tablePrint from '~/components/tablePrintPdf.vue';
       classe: null,
       classes: [],
       eleves: [],
+      ecoles:[],
       search:'',
       departements:[],
       dialogDelete: false,
@@ -255,11 +281,20 @@ import tablePrint from '~/components/tablePrintPdf.vue';
           { text: "Tel", value: "teld" },    
           { text: 'Filles', value: 'nb_fille' },
           { text: 'Garcons', value: 'nb_garcon' },
-          { text: 'Total', value: 'total' },          
+          { text: 'Total', value: 'total' },         
           
        ];
      
       return headers
+        },
+      headerSec (){
+          const  headerSec= [       
+          { text: "Ecole", value: "nom" },
+          { text: "Code", value: "code" },                 
+          
+       ];
+     
+      return headerSec
         },
 
       formTitle () {
@@ -281,8 +316,9 @@ import tablePrint from '~/components/tablePrintPdf.vue';
     },
 
     mounted () {
-      this.getClasses()
-      this.get_certificat()
+      this.get_ecole_secondaire()
+     // this.getClasses()
+     // this.get_certificat()
     },
 
     methods: {
@@ -291,6 +327,15 @@ import tablePrint from '~/components/tablePrintPdf.vue';
              this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
                 await this.$axios.get('liste-certificat').then( response => {
                   this.eleves = response.data;
+                  })
+          },
+
+     async get_ecole_secondaire(){
+       this.visible = true
+             this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
+                await this.$axios.get('ecole-secondaire/'+45).then( response => {
+                  this.ecoles = response.data;
+                  this.visible =false
                   })
           },
 

@@ -709,7 +709,7 @@
               this.getEleves()
               this.$notifier.showMessage({ content: 'Elève enregistré avec succès', color: 'success' })    
         } else {
-            this.$notifier.showMessage({ content: 'Echec4', color: 'error' })
+            this.$notifier.showMessage({ content: 'Echec', color: 'error' })
             // console.log(res.data.message)
           }
         })

@@ -42,7 +42,8 @@ export default {
     '~plugins/moment.js',
     '~plugins/apex.js',
     '~plugins/notifier.js',
-      { src: '@/plugins/vue-html2pdf', mode: 'client' }
+      { src: '@/plugins/vue-html2pdf', mode: 'client' },
+    '~plugins/vuetify-mask.js',
     
 
   ],
