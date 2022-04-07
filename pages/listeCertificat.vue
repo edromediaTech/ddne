@@ -278,6 +278,7 @@ import tablePrint from '~/components/tablePrintPdf.vue';
           { text: "Ecole", value: "ecole" },
           { text: "Nom Directeur", value: "nomd" },
           { text: "Prenom", value: "prenom" },    
+          { text: "Niveau", value: "prenom" },    
           { text: "Tel", value: "teld" },    
           { text: 'Filles', value: 'nb_fille' },
           { text: 'Garcons', value: 'nb_garcon' },
@@ -290,6 +291,9 @@ import tablePrint from '~/components/tablePrintPdf.vue';
       headerSec (){
           const  headerSec= [       
           { text: "Ecole", value: "nom" },
+          { text: "Niveau", value: "niveau" },                 
+          { text: "Niveau1", value: "niveau1" },                 
+          { text: "Directeur", value: "directeur" },                 
           { text: "Code", value: "code" },                 
           
        ];

@@ -684,8 +684,8 @@
       },
       updateEleve (eleve) {    
               
-        this.$axios.patch( 'eleve-edit/' + eleve.classeleve_id  +'|'+ eleve.id+'|'+localStorage.anac, eleve).then(res => {
-            if (res.data.status === 1) { 
+        this.$axios.patch( 'eleve-edit/' + eleve.classeleve_id  +'|'+ eleve.id+'|'+this.an, eleve).then(res => {
+           if (res.data.status === 1) { 
             this.$notifier.showMessage({ content: 'Elève modifié', color: 'success' })       
             return true 
             } 
@@ -696,15 +696,16 @@
       },
 
     
-      async storeEleve () {                   
-                  
+    async storeEleve () {                   
+               
         this.editedItem.ecole_id = this.ecole
         this.editedItem.classe_id = this.classe
         this.editedItem.anac = localStorage.anac
-          this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
-         
-        await this.$axios.post( 'eleve-store', this.editedItem).then(res => {
         
+          this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
+          this.$axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*'
+        await this.$axios.post( 'eleve-store', this.editedItem).then(res => {   
+            //  alert(res.data)
           if (res.data.status === 1) {
               this.getEleves()
               this.$notifier.showMessage({ content: 'Elève enregistré avec succès', color: 'success' })    
@@ -716,7 +717,7 @@
         this.loading = false
       },
 
-      editItem (item) {
+    editItem (item) {
         this.editedIndex = this.eleves.indexOf(item)
         this.editedItem = Object.assign({}, item)
         this.dialog = true

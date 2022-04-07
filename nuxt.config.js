@@ -43,6 +43,7 @@ export default {
     '~plugins/apex.js',
     '~plugins/notifier.js',
       { src: '@/plugins/vue-html2pdf', mode: 'client' },
+    '~plugins/geolocalisation.js',
     '~plugins/vuetify-mask.js',
     
 
@@ -81,8 +82,8 @@ export default {
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
  
    axios: {
-         baseURL : 'http://ddne-back.loc/api/',
-     // baseURL : 'https://base.suped-ddne.com/api/',
+       baseURL : 'http://ddne-back.loc/api/',
+       //  baseURL : 'https://base.suped-ddne.com/api/',
       // credentials: false,
       // proxy: true           
   },

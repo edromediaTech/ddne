@@ -268,8 +268,7 @@
           <template #input>
             <v-text-field           
               v-model="props.item.nordre"
-                label="Edit"    
-                             
+                label="Edit"                             
                 type="number"                         
                 @blur="update_decision(props.item)" 
             ></v-text-field>

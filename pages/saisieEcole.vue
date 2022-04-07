@@ -23,7 +23,7 @@
             <!-- <v-stepper-step  :complete="e1 > 4"   step="4">   Etat</v-stepper-step>  
                 <v-divider></v-divider> -->
 
-            <v-stepper-step   step="4"  > Etat </v-stepper-step>
+            <v-stepper-step   step="4"  > Etat Batiment </v-stepper-step>
        </v-stepper-header>
      
 <!-- *************************************  Identification ecole ************************** -->
@@ -204,8 +204,7 @@
                             :items="zones"
                             :rules="[v => !!v || msgrules]"
                             label="Zones"
-                            required
-                            @change="getData('zones', zone)"
+                            required                          
                             ></v-select>
                            
                           </v-col>
@@ -235,10 +234,10 @@
                             ></v-select>                           
                           </v-col>
               <v-col  cols="12"  md="4" sm="6" >
-                     <v-text-field  v-model="ec.latitude"  type="number"  label="Latitude"  required ></v-text-field>
+                     <v-text-field  v-model="ec.latitude" label="Latitude"  required ></v-text-field>
             </v-col>
               <v-col  cols="12"  md="4" sm="6" >
-                    <v-text-field  v-model="ec.longitude"  type="number" label="Longitude"  required ></v-text-field>
+                    <v-text-field  v-model="ec.longitude" label="Longitude"  required ></v-text-field>
             </v-col>                                           
         </v-row>
     </v-card>
@@ -266,77 +265,68 @@
                 required  ></v-text-field>
             </v-col>
             <v-col
-                        cols="12"
-                        sm="6"
-                        md="4"
-                      >
-                        <v-menu
-                          ref="menu"
-                          v-model="menu"
-                          :close-on-content-click="false"
-                          :return-value.sync="datenais"
-                          transition="scale-transition"
-                          offset-y
-                          min-width="auto"
-                        >
-                          <template #activator="{ on, attrs }">
-                            <v-text-field
-                              v-model="ec.datenais"
-                              label="Date Naissance"
-                              prepend-icon="mdi-calendar"
-                              readonly
-                              v-bind="attrs"
-                              v-on="on"
-                            />
-                          </template>
-                          <v-date-picker
-                            v-model="ec.datenais"
-                             :rules="[v => !!v || msgrules]"
-                             required
-                            no-title
-                            scrollable
-                          >
-                            <v-spacer />
-                            <v-btn
-                              text
-                              color="primary"
-                              @click="menu = false"
-                            >
-                              Cancel
-                            </v-btn>
-                            <v-btn
-                              text
-                              color="primary"
-                              @click="$refs.menu.save(ec.datenais)"
-                            >
-                              OK
-                            </v-btn>
-                          </v-date-picker>
-                        </v-menu>
-                      </v-col>
+      cols="12"
+      sm="6"
+      md="4"
+    >
+      <v-menu
+        ref="menu"
+        v-model="menu"
+        :close-on-content-click="false"
+        :return-value.sync="ec.datenais"
+        transition="scale-transition"
+        offset-y
+        min-width="auto"
+      >
+        <template #activator="{ on, attrs }">
+          <v-text-field
+            v-model="ec.datenais"
+            label="Date Naissance"
+            prepend-icon="mdi-calendar"
+            readonly
+            v-bind="attrs"
+            v-on="on"
+          ></v-text-field>
+        </template>
+        <v-date-picker
+          v-model="ec.datenais"
+          no-title
+          scrollable
+        >
+          <v-spacer></v-spacer>
+          <v-btn
+            text
+            color="primary"
+            @click="menu = false"
+          >
+            Cancel
+          </v-btn>
+          <v-btn
+            text
+            color="primary"
+            @click="$refs.menu.save(ec.datenais)"
+          >
+            OK
+          </v-btn>
+        </v-date-picker>
+      </v-menu>
+    </v-col>
                     <v-col   cols="12"  md="5" sm="6" >
             <v-text-field v-model="ec.lieunais" :rules="nameRules"   label="Lieu de Naissance"
                 required ></v-text-field>
             </v-col>
              <v-col   cols="12"    sm="6"       md="3"   >
                     <span>Sexe</span>
-                     <v-radio-group
-                      v-model="ec.sexe" 
-                        row
-                     >
-                        <v-radio
-                                                 
+                      <v-radio-group  v-model="ec.sexe" row> 
+                        <v-radio                                                   
                           label="M" 
-                          value="1" 
-                            hide-details                        
-                        ></v-radio>
-                         <v-radio
-                          v-model="ec.sexe"                         
+                          value="1"                                                                              
+                        />
+                         <v-radio                                                 
                           label="F" 
-                          value="0"
-                            hide-details                         
-                        ></v-radio>
-                         </v-radio-group>
+                          value="0"                                                    
+                        />
+                      </v-radio-group>
                 </v-col>
             
                  <v-col cols="12" md="4" sm="6">
@@ -368,7 +358,7 @@
                           </v-col>
                      <v-col   cols="12"   sm="6"    md="4">
                         <v-select                           
-                            v-model="ec.sectioncommunaled"
+                            v-model="ec.section_communaled_id"
                             :items="sectioncoms"
                             :rules="[v => !!v || msgrules]"
                             label="Section Communale"
@@ -379,10 +369,10 @@
             <v-text-field   v-model="ec.adressed"  :rules="nameRules"    label="Adresse" required ></v-text-field>
             </v-col>
         </v-row>
-     </v-card>
+            </v-card>
      <v-row>
-            <v-col cols="12" md="9" sm="6"></v-col>
-            <v-col cols="12" md="3" sm="6"> 
+            <v-col cols="12" md="8" sm="6"></v-col>
+            <v-col cols="12" md="4" sm="6"> 
         <v-btn small  title="Continuer" color="primary"  @click="e1 = 4" > <v-icon>mdi-arrow-right-bold</v-icon> </v-btn>
         <v-btn small title="Precedent" color="Secondary"   class="ma-2" @click="e1 = 2"> <v-icon>mdi-arrow-left-bold</v-icon></v-btn>
         <v-btn small title="Quitter" color="cyan">  <v-icon>mdi-close</v-icon> </v-btn>
@@ -393,37 +383,90 @@
  <!-- ********************** Etat ******************* -->
 
     <v-stepper-content step="4">
-           <v-card   class="mb-12 pa-4"  color="grey lighten-1"  height="auto"  >
+           <v-card   class="mb-12 pa-4"  color="grey lighten-1"  height="auto" >          
 
                <v-row v-if="questions.length >0" class="ma-2">                   
                     <span v-for="q in questions" :key="q.id" >                                      
                         <span v-if ="q.type_q === 'select'">                     
                             <v-col cols="12" md="12" sm="6" >
-                             <label ><b>{{q.libelle}}*</b></label>
-                               <v-select  id="'q'.q.id"  type=""  required>
-                                   <span v-for="opt in options" :key="opt.id">
-                                       <span v-if="opt.question_id === q.id">
-                                           <option v-bind="opt.id">{{opt.libelle}}</option>                                     
-                                       </span>
-                                   </span>
-                                </v-select>                              
-                            </v-col>                           
-                        </span>                  
-                       <span v-else>                        
-                           <v-col cols="12" md="12" sm="6">                      
+                           <v-select                           
+                            v-model="q.option_id"
+                            :items="options"
+                            :rules="[v => !!v || msgrules]"
+                            :label="q.libelle"
+                            required                           
+                            ></v-select>                              
+                                 </v-col>                      
+                        </span>
+                                      
+                       <span v-else > 
+                                               
+                           <v-col cols="12" md="12" sm="6" class="carte">                      
                                      <label><b>{{q.libelle}}* </b></label>                       
-                               <span v-for="opt in options" :key="opt.id">
+                               <span v-for="(opt) in options" :key="opt.value">
                                   <span v-if="opt.question_id === q.id" >                                 
-                                     <v-radio-group  row>                                    
-                                         <v-radio   id="'chk'.opt.id" data-question="q.id" value="opt.id" />
-                                           {{opt.libelle}}
-                                     </v-radio-group>                                                            
+                                     <v-checkbox   v-model="q.option_id"   :label= opt.text :value="opt.value">
+                                         
+                                     </v-checkbox> 
+                                                                                           
                                     </span>
                                 </span> 
                            </v-col>                                                      
                         </span>    
                     </span> 
                 </v-row>
+               <v-row>
+             <v-col
+                        cols="12"
+                        sm="6"
+                        md="4"
+                      >
+                        <v-menu
+                          ref="menu1"
+                          v-model="menu1"
+                          :close-on-content-click="false"
+                          :return-value.sync="ec.dateEval"
+                          transition="scale-transition"
+                          offset-y
+                          min-width="auto"
+                        >
+                          <template #activator="{ on, attrs }">
+                            <v-text-field
+                              v-model="ec.dateEval"
+                              label="Date Evaluation"
+                              prepend-icon="mdi-calendar"
+                              readonly
+                              v-bind="attrs"
+                              v-on="on"
+                            />
+                          </template>
+                          <v-date-picker
+                            v-model="ec.dateEval"
+                             :rules="[v => !!v || msgrules]"
+                             required
+                            no-title
+                            scrollable
+                          >
+                            <v-spacer />
+                            <v-btn
+                              text
+                              color="primary"
+                              @click="menu1 = false"
+                            >
+                              Cancel
+                            </v-btn>
+                            <v-btn
+                              text
+                              color="primary"
+                              @click="$refs.menu1.save(ec.dateEval)"
+                            >
+                              OK
+                            </v-btn>
+                          </v-date-picker>
+                        </v-menu>
+                      </v-col>
+                      </v-row>
+
            </v-card>
            <v-row>
                 <v-col cols="12" md="9" sm="6"></v-col>
@@ -451,8 +494,7 @@
       return {
         e1: 1,
         valid: false,
-         departement: '',
-         
+         departement: '',         
         ecole: '',
         district:'',
         commune:'',
@@ -463,7 +505,8 @@
      sectioncoms:[],
      questions:[],
      options:[],
-          niveauens:[{text:'Prescolaire', value:'0001'}, {text:'Fondamental', value:'0110'},
+     repeb: [],
+        niveauens:[{text:'Prescolaire', value:'0001'}, {text:'Fondamental', value:'0110'},
                       {text:'Secondaire', value:'1000'},  {text:'Ecole Complete', value:'1111'},
                       {text:'Fondamental 1er et 2eme cycle', value:'0010'},
                       {text:'Prescolaire et Fondamental 1er et 2eme cycle', value:'0011'},
@@ -479,12 +522,15 @@
         ec:{ nomd: '',   prenom: '',   cin: '',    nif: '',   tel: '',  email: '', telephone:'', teld:'', 
               fondateur:'',  sigle:'',  niveau:'',  categorie:'', milieu:'', secteur:'', vacation:'', location:'', 
               adressed:'', adresse: '',  lieunais: '',    sexe: '',   telephoned:'',   communed:'',  emaild: '',
-             longitude:'', latitude:'', code:'', statut:'', acces:'', nom:'', sectioncommunaled:'', 
-             section_communale_id:'', datenais: '',  zone_id: '',},
+             longitude:'', latitude:'', code:'', statut:'', acces:'', nom:'', section_communaled_id:'', 
+             section_communale_id:'', datenais: null,  zone_id: '', dateEval:null},
       menu: false,
       modal: false,
       menu2: false,
-             
+      menu1:false,
+      locationgps:null,
+    gettingLocation: false,
+    errorStr:null,
     msgrules:'Champ obligatoire',
       nameRules: [
         v => !!v || 'Champ obligatoire',
@@ -497,6 +543,9 @@
       ],
       }
     },
+    created(){
+      this.getCoordinates()
+    },
     mounted () {      
       this.get_dept() 
       this.get_Etat() 
@@ -504,6 +553,7 @@
     },
 
     methods:{
+      
           async get_dept(){
               this.visible = true
              this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
@@ -515,11 +565,11 @@
 
           async get_Etat(){             
              this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
-            await this.$axios.get( 'get-etat').then( response => {
+             await this.$axios.get( 'get-etat').then( response => {
                   this.sectioncoms = response.data.sectioncommunales
-                  this.questions = response.data.questions
-                  this.options = response.data.options
-                
+                  const quest = response.data.questions
+                  this.questions = this.addRestoQuest(quest)
+                  this.options = response.data.options                
                   })                 
           },
 
@@ -587,17 +637,73 @@
 
         async store(){
                  this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
-            
-            await this.$axios.post('store-data-ecole',this.ec).then(response => {               
-                if(response.data.status === 1) {                              
+                const data = {ecole: this.ec, etat: this.questions}
+                
+            await this.$axios.post('store-data-ecole',data).then(response => { 
+              console.log(response.data)              
+                if(response.data === 1) {                              
                   this.$notifier.showMessage({ content: 'Succes', color: 'success' })                   
                 }
                 else{
-                     this.$notifier.showMessage({ content: 'Echec', color: 'error' })
+                     this.$notifier.showMessage({ content: 'Echec: '+response.data, color: 'error' })
                 }
              })
               this.loading =false
-        }
+        },
+        
+      getCoordinates () {
+        this.$getLocation({
+          enableHighAccuracy: false, // false defaults to false
+          timeout: Infinity, // defaults to Infinity
+          maximumAge: 0, // defaults to 0
+
+        })
+          .then(coordinates => {
+            console.log(coordinates)
+            this.ec.latitude = coordinates.lat
+            this.ec.longitude = coordinates.lng
+          })
+      },
+
+     localisation(){
+           if(!("geolocation" in navigator)) {
+             this.$notifier.showMessage({ content: 'La Geolocalisation n\'est pas disponible.', color: 'error' })
+              this.errorStr = 'Geolocation is not available.';
+              return;
+            }
+
+            this.gettingLocation = true;
+            // get position
+            navigator.geolocation.getCurrentPosition(pos => {
+              this.gettingLocation = false;
+              this.locationgps = pos;
+            }, err => {
+              this.gettingLocation = false;
+              this.errorStr = err.message;
+            })
+            this.ec.latitude = this.locationgps.coords.latitude
+            this.ec.longitude = this.locationgps.coords.longitude
+       },
+
+   addRestoQuest(quest){     
+        if(quest.length > 0){          
+          const data = []
+           quest.forEach((q)=>{
+               q.option_id = [];
+              data.push(q)
+          })
+         
+       return data;
+   }
+     return quest;
+}
     }
   }
 </script>
+<style scoped>
+.carte{
+  border: solid 1px black;
+  margin: 30px;
+  
+}
+</style>

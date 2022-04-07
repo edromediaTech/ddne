@@ -757,7 +757,7 @@ import tablePrintEleve from '~/components/tablePrintEleve.vue';
       },
       updateEleve (eleve) {    
               
-        this.$axios.patch( 'eleve-edit/' + eleve.classeleve_id  +'|'+ eleve.id+'|'+localStorage.anac, eleve).then(res => {
+        this.$axios.patch( 'eleve-edit/' + eleve.classeleve_id  +'|'+ eleve.id+'|'+this.an, eleve).then(res => {
             if (res.data.status === 1) { 
             this.$notifier.showMessage({ content: 'Elève modifié', color: 'success' })       
             return true 
@@ -784,7 +784,7 @@ import tablePrintEleve from '~/components/tablePrintEleve.vue';
     
                     // console.log('Don inséré!')
           } else {
-            this.$notifier.showMessage({ content: 'Echec:', color: 'error' })
+            this.$notifier.showMessage({ content: 'Echec', color: 'error' })
             // console.log(res.data.message)
           }
         })

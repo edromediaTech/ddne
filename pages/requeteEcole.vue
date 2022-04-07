@@ -139,7 +139,7 @@
                 title="Télécharger liste ecole en excel" 
                 class="mx-2 mt-1"
               :data="ecoles"
-              name="Liste eleves"
+              name="Liste ecoles"
               header="Liste des ecoles"
             >
               <v-img
@@ -174,7 +174,7 @@
                       
                         >
                         <template slot="pdf-content"  class="sectpdf">                             
-                         <table-print-reqecole :ecoles="ecoles" :texte="texte" />                             
+                         <table-print-reqecole :ecoles="ecoles" />                             
                         </template>
                     </vue-html2pdf>
                   </client-only>             
@@ -225,14 +225,16 @@ export default {
                 {text:'Fondamental et Secondaire', value:'1110'}, {text:'3e Cycle', value:'0100'},
                 {text:'Prescolaire inclus', value:'-0001'},
                 {text: '1e et 2e  Cycle inclus', value:'-0010'},
-                  {text: '3e Cycle inclus', value:'-0100'},
-                  { text:'Secondaire inclus', value:'-1000'}
+                {text: '3e Cycle inclus', value:'-0100'},
+                { text:'Secondaire inclus', value:'-1000'}
                 ],
             ecoles:[],
             visible:false,
             headers: [ 
                  { text: 'Ecole', value: 'Ecole' },      
                  { text: "Adresse", value: "Adresse" },
+                //  { text: "Niveau", value: "Niveau_Enseignement"},
+                //  { text: "Niveau1", value: "niveau1"},
                  { text: "Accès", value: "Acces" },                     
                  { text: "Tel", value: "tel" },                     
                  { text: "Nom Directeur", value: "Nom_Directeur" },                     
@@ -259,6 +261,7 @@ export default {
         
 
           async get_ecole(){
+           // alert(this.donnee.niveau)
               this.visible = true
              this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
                const data = this.donnee.district+'|'+this.donnee.commune+'|'+this.donnee.zone+'|'+this.donnee.secteur+'|'+this.donnee.niveau
@@ -317,21 +320,21 @@ export default {
                  })
                 
               }
-              if (data === 'zones'){
+              // if (data === 'zones'){
                   
-                  this.visible = true
-                   this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
-                 this.$axios.get( 'get-zone/'+ this.donnee.zone).then( response => {
-                  this.ecoles = response.data;
-                    this.ecoles.push({text:'Toutes', value: 0})
-                   this.visible = false
-                 })
+              //     this.visible = true
+              //      this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
+              //    this.$axios.get( 'get-zone/'+ this.donnee.zone).then( response => {
+              //     this.ecoles = response.data;
+              //       this.ecoles.push({text:'Toutes', value: 0})
+              //      this.visible = false
+              //    })
                 
-              }
+              // }
               
              },
     generateReport () {
-       this.texte =  this.get_text()
+       // this.texte =  this.get_text()
       
             this.$refs.html2Pdf.generatePdf()
         },

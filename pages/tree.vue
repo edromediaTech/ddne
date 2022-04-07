@@ -59,7 +59,7 @@
     <v-col cols="12" sm="6" md="6" > 
      <v-text-field
                v-model="prof.nom"
-                  label="Nom"
+                  label="Nom*"
                     maxlength="55"
                     :rules="[v => !!v || msgrules]"                   
                     required
@@ -69,7 +69,7 @@
             <v-col cols="12" sm="6" md="6" > 
               <v-text-field
                         v-model="prof.prenom"
-                            label="Prénom"
+                            label="Prénom*"
                               maxlength="55"
                               :rules="[v => !!v || msgrules]"
                               required
@@ -83,11 +83,23 @@
                         <v-select
                           v-model="prof.sexe"
                           :items="[{text:'Masculin', value:1}, {text:'Féminin', value:0}]"
-                          label="Sexe"
+                          label="Sexe*"
                           
                         />
                       </v-col>
-                   <v-col cols="12" sm="6" md="6" > 
+                       <v-col
+                        cols="12"
+                        sm="6"
+                        md="6"
+                      >
+                        
+                  <v-text-field                   
+                          v-model="prof.date_naissance"                        
+                          label="Date Naissance"                         
+                          type="date"                         
+                         />
+                      </v-col>
+                   <!-- <v-col cols="12" sm="6" md="6" > 
                       <v-menu
                           ref="menu6"
                           v-model="menu6"
@@ -100,7 +112,7 @@
                           <template #activator="{ on, attrs }">
                             <v-text-field
                               v-model="prof.date_naissance"
-                              label="Date de naissance"
+                              label="Date de naissance*"
                               prepend-icon="mdi-calendar"
                               readonly
                               v-bind="attrs"
@@ -113,6 +125,7 @@
                              required
                             no-title
                             scrollable
+                           
                           >
                             <v-spacer />
                             <v-btn
@@ -131,7 +144,7 @@
                             </v-btn>
                           </v-date-picker>
                         </v-menu>
-                   </v-col>
+                       </v-col> -->
                       <v-col   cols="12"
                               sm="6"
                               md="6">
@@ -139,7 +152,7 @@
                             v-model="prof.dept_n"
                             :items="departements"
                             :rules="[v => !!v || msgrules]"
-                            label="Département de Naissance"
+                            label="Département de Naissance*"
                             required
                             @change="get_com"
                             ></v-select>
@@ -154,7 +167,7 @@
                             v-model="prof.commune_n"
                             :items="communes"
                             :rules="[v => !!v || msgrules]"
-                            label="Commune de Naissance"
+                            label="Commune de Naissance*"
                             required                         
                             ></v-select>                           
                           </v-col>
@@ -180,21 +193,19 @@
                         />
                       </v-col>
                       <v-col cols="12" sm="6" md="6" > 
-              <v-text-field
+                      <v-text-field
                         v-model="prof.cin"
-                            label="CINU"
-                              maxlength="15"
-                              :rules="[v => !!v || msgrules]"
-                              required
-                                  /> 
+                       label="CINU"
+                            maxlength="15"
+                            type="number"                              
+                             /> 
                  </v-col>
                  <v-col cols="12" sm="6" md="6" > 
               <v-text-field
                         v-model="prof.adresse"
                             label="Adresse"
                               maxlength="55"
-                              :rules="[v => !!v || msgrules]"
-                              required
+                              
                                   /> 
                  </v-col>
                   <v-col   cols="12"
@@ -204,7 +215,7 @@
                             v-model="prof.dept_h"
                             :items="departements"
                             :rules="[v => !!v || msgrules]"
-                            label="Département"
+                            label="Département d'habitation*"
                             required
                             placeholder="Adresse"
                             @change="get_comH"
@@ -220,7 +231,7 @@
                             v-model="prof.commune_h"
                             :items="communesh"
                             :rules="[v => !!v || msgrules]"
-                            label="Commune"
+                            label="Commune d'habitation*"
                               placeholder="Adresse"
                             required                         
                             ></v-select>                           
@@ -254,9 +265,7 @@
           <v-text-field
                           v-model="prof.email"
                            prepend-icon="mdi-mail"
-                          label="E-mail"
-                          :rules="emailRules"
-                          required
+                          label="E-mail"                          
                         ></v-text-field> 
                         </v-col>  
                          <v-col cols="12" sm="6" md="6" > 
@@ -281,8 +290,7 @@
                           </template>
                           <v-date-picker
                             v-model="prof.date_affectation"
-                             :rules="[v => !!v || msgrules]"
-                             required
+                             
                             no-title
                             scrollable
                           >
@@ -325,9 +333,7 @@
                             />
                           </template>
                           <v-date-picker
-                            v-model="prof.date_EFonction"
-                             :rules="[v => !!v || msgrules]"
-                             required
+                            v-model="prof.date_EFonction"                             
                             no-title
                             scrollable
                           >
@@ -388,20 +394,20 @@
                         sm="6"
                         md="6" >
                 <v-select   
-                  v-model="formations.nomf"                          
+                  v-model="formation.nomf"                          
                     :items="['Science de l\'Education','ENI','ENS','FIA','CEFEF','Capiste','Jardinière','Autres']"                   
-                    label="Formation Academique"
+                    label="Formation Academique*"
                     required                    
                 ></v-select>
                
             </v-col> 
-             <v-col v-if="formations.nomf ==='Autres'"
+             <v-col v-if="formation.nomf ==='Autres'"
                         cols="12"
                         sm="6"
                         md="6"
                       >
                         <v-text-field                    
-                          v-model="autres"                        
+                          v-model="formation.nomf"                        
                           label="Saisie votre formation"
                            :rules="[v => !!v || msgrules]"
                            maxlength="25"
@@ -410,14 +416,14 @@
                         />
                       </v-col>  
                  
-           <v-col
+                      <v-col
                         cols="12"
                         sm="6"
                         md="6"
                       >
                         <v-text-field                    
-                          v-model="formations.lieu"                        
-                          label="Adresse de l'institution"
+                          v-model="formation.lieu"                        
+                          label="Adresse de l'institution*"
                            :rules="[v => !!v || msgrules]"
                            maxlength="25"
                            required
@@ -431,13 +437,10 @@
                       >
                         
                   <v-text-field                   
-                          v-model="formations.date_debut"                        
+                          v-model="formation.date_debut"                        
                           label="Date debut"
                           mask="01 / 01 / 1990"
-                          type="date"
-                           :rules="[v => !!v || msgrules]"
-                           maxlength="25"
-                           required
+                          type="date"                         
                           
                         />
                       </v-col>
@@ -447,13 +450,11 @@
                         md="6"
                       >
                         <v-text-field                    
-                          v-model="formations.date_fin"                        
+                          v-model="formation.date_fin"                        
                           label="Date fin"
                           type="date"
                           locale="fr"
-                           :rules="[v => !!v || msgrules]"
-                           maxlength="6"
-                           required
+                           
                           
                         />
                       </v-col>            
@@ -482,14 +483,33 @@
               hide-details
             ></v-checkbox>                 
                  </v-col>
-                 <v-row v-if="formatc"> 
-              <v-col
+                <div v-if="formatc">
+                   <v-row  v-for="formationc,i in formationsP" :key="i "  class="fbox">
+         <v-col  cols="12"
+                        sm="6"
+                        md="12" >
+            <span class="format" > Formation Continue {{i+1}} 
+                </span> 
+              <v-btn 
+                  v-if= "i > 0"                 
+                  color="red"
+                  title="Cliquez si vous souhaitez supprimer"                  
+                  fab                                        
+                   x-small                  
+                    class="ml-4 mb-4"               
+                   @click="deleteFormatP(formationc)"              
+                >
+                  <v-icon>mdi-close</v-icon> 
+                
+                </v-btn>
+         </v-col>
+            <v-col
                         cols="12"
                         sm="6"
                         md="6"
                       >
                         <v-text-field                    
-                          v-model="prof.titre"                        
+                          v-model="formationc.titre"                        
                           label="Titre de la Formation"
                            :rules="[v => !!v || msgrules]"
                            maxlength="25"
@@ -502,7 +522,7 @@
                         md="6"
                       >
                         <v-text-field                    
-                          v-model="prof.lieu"                        
+                          v-model="formationc.lieu"                        
                           label="Lieu"
                            :rules="[v => !!v || msgrules]"
                            maxlength="25"
@@ -515,7 +535,7 @@
                         md="4"
                       >
                         <v-text-field                    
-                          v-model="prof.duree"                        
+                          v-model="formationc.duree"                        
                           label="Durée"
                            :rules="[v => !!v || msgrules]"
                            maxlength="25"
@@ -530,7 +550,7 @@
                         md="4"
                       >
                         <v-text-field                    
-                          v-model="prof.organisateur"                        
+                          v-model="formationc.organisateur"                        
                           label="Organisateur"
                            :rules="[v => !!v || msgrules]"
                            maxlength="25"
@@ -543,51 +563,33 @@
                         sm="6"
                         md="4"
                       >
-                        <v-menu
-                          ref="menu5"
-                          v-model="menu5"
-                          :close-on-content-click="false"
-                          :return-value.sync="prof.datef"
-                          transition="scale-transition"
-                          offset-y
-                          min-width="auto"
-                        >
-                          <template #activator="{ on, attrs }">
-                            <v-text-field
-                              v-model="prof.datef"
-                              label="Date"
-                              prepend-icon="mdi-calendar"
-                              readonly
-                              v-bind="attrs"
-                              v-on="on"
-                            />
-                          </template>
-                          <v-date-picker
-                            v-model="prof.datef"
-                             :rules="[v => !!v || msgrules]"
-                             required
-                            no-title
-                            scrollable
-                          >
-                            <v-spacer />
-                            <v-btn
-                              text
-                              color="primary"
-                              @click="menu5 = false"
-                            >
-                              Cancel
-                            </v-btn>
-                            <v-btn
-                              text
-                              color="primary"
-                              @click="$refs.menu5.save(prof.datef)"
-                            >
-                              OK
-                            </v-btn>
-                          </v-date-picker>
-                        </v-menu>
+                        <v-text-field                    
+                          v-model="formationc.datef"                        
+                          label="Date fin"
+                          type="date"
+                          locale="fr"
+                           :rules="[v => !!v || msgrules]"
+                           maxlength="6"
+                           required
+                          
+                        />
                       </v-col>
-                      </v-row>
+              
+              </v-row>
+             <v-btn                  
+                  color="primary"
+                  dark
+                  fab                                        
+                   x-small                  
+                    class=" mt-4 mb-2 m-4 px-4"               
+                   @click="addFormatContinue"              
+                >
+                  <v-icon >mdi-plus</v-icon>                 
+                </v-btn> 
+                 <span class ="plus"> Cliquez si vous avez d'autres formations.</span>
+         
+                     
+                </div>
                        <v-col
             cols="12"
             sm="4"
@@ -625,10 +627,8 @@
                           v-model="prof.description"                        
                           label="Description"
                            :rules="[v => !!v || msgrules]"
-                           maxlength="55"
-                         
-                           required
-                          
+                           maxlength="55"                         
+                           required                          
                         />
                       </v-col>                     
                       
@@ -643,7 +643,9 @@
                     :items="[{value:'1',text:'Bénévolat'},{value:'2',text:'Contractuel'}
                               ,{value:'3',text:'Fonctionnaire'},{value:'4',text:'Remplacant'},
                               {value:'5',text:'Stagiaire'},{value:'6',text:'Sous-Traitant'},{value:'7',text:'Situation Particulière'}]"                                           
-                    label="Statut"
+                    label="Statut*"
+                     :rules="[v => !!v || msgrules]"
+                     maxlength="55"                  
                     required                    
                 ></v-select>               
             </v-col> 
@@ -672,9 +674,7 @@
                             />
                           </template>
                           <v-date-picker
-                            v-model="prof.date_nomination"
-                             :rules="[v => !!v || msgrules]"
-                             required
+                            v-model="prof.date_nomination"                             
                             no-title
                             scrollable
                           >
@@ -705,7 +705,7 @@
                       >
                         <v-text-field                    
                           v-model="prof.code_budgetaire"                        
-                          label="Code Budgetaire"
+                          label="Code Budgetaire*"
                            :rules="[v => !!v || msgrules]"
                            maxlength="25"
                            required                          
@@ -719,7 +719,7 @@
                          <v-select
                           v-model="prof.type_chaire"
                           :items="['1 Chaires', '2 Chaires', '3 Chaires', 'Temps plein']"
-                          label="Type de chaires"
+                          label="Type de chaires*"
                           
                         />
                       </v-col>
@@ -800,7 +800,7 @@
       
       prof:{  type:'',  nif:0, telephone:'', statut:'', lieunais:'',  adresse:'',  cin:'', nom:'', prenom:'',   sexe:0, commune_n:'',
       commune_h:'', dept_n:'', dept_h:'', email: '', date_naissance:null,  dateAffectation:null, date_EFonction:null, date_nomination:null, code_budgetaire:''
-      ,statutmat:'', titre:'', duree:'', lieu:'', organisateur:'',datef:null, titref:'',description:'', nomf:'',lieuf:''},     
+      ,statutmat:'', titre:'',  titref:'',description:'', nomf:'',lieuf:''},     
     
     label: "NIF",
     focus: false,   
@@ -818,6 +818,7 @@
               (v) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail doit être valide'
             ],
               formations :[{nomf:'', lieu:'', date_debut:null, date_fin:null}],
+              formationsP :[{titre:'', duree:'',lieu:'',organisateur:'',datef:''}],
             
         menu: false,
          modal: false,
@@ -952,21 +953,45 @@
               }                            
      },
 
-  async store_prof(){
-                  
+    //  test_date(){
+    //  //  (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
+    //    const date = new Date()
+    //     const daten = new Date(this.prof.date_naissance)              
+    //       alert(daten.getTime())
+    //      if(daten.getTime() > (date) ){
+    //        this.$notifier.showMessage({ content: 'Vous n\'êtes pas encore majeur !', color: 'error' }) 
+    //               return false;
+    //        }
+    //  },
+
+  async store_prof(){ 
+    const datedeb = new Date(this.formation.date_debut)
+        const datefin = new Date(this.formation.date_fin)              
+         if(datedeb.getTime() > datefin.getTime() ){
+            this.$notifier.showMessage({ content: 'La Date de la fin ne peut pas etre inferieure a la date du debut !', color: 'error' })     
+              return false;
+         } 
+            
+                            
          if(!this.arbrecomplete())         
              return false
-         this.reformatTreeData()
+            this.reformatTreeData()
+
          this.visible = true 
         
-         const donnees ={formation:this.formations, prof:this.prof, 
+         const donnees ={formation:this.formations, prof:this.prof, formatp:this.formationsP,
                           affectation:this.affectations, matiere:this.matieres, niveau:this.niveaux}
-         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')           
-        await this.$axios.post('store-enseignant',JSON.stringify(donnees)).then(res => {
-
-          if(res.data.status === 1){
+                            this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')           
+        await this.$axios.post('store-enseignant',JSON.stringify(donnees)).then(res => {        
+          if(res.data.reponse === 1){
                 this.$notifier.showMessage({content:'Succes', color:'success'})
+                    this.$notifier.showMessage({content:'Succès!!!', color:'success'})     
+                if(res.data.message.length > 0) 
+                this.$notifier.showMessage({content:res.data.message, color:'error'})  
                 return true 
+            }
+            else{
+               this.$notifier.showMessage({content:res.data.message[0], color:'error'})
             }          
         })
         this.visible = false
@@ -975,7 +1000,7 @@
 
      async checkNif(){
         if((this.prof.nif).length < 12 || this.prof.nif==='000-000-000-0'){
-           this.$notifier.showMessage({content:'NIF invalide', color:'error'}) 
+           this.$notifier.showMessage({content:' NIF invalide', color:'error'}) 
            return false
         }
            this.visible = true
@@ -992,11 +1017,19 @@
       },
 
   ajouterFormation(){
-               this.formations.push({titref:'', lieuf:'', datef:'', dated:''})
+               this.formations.push({nomf:'', lieu:'', date_debut:null, date_fin:null})
             },
+      addFormatContinue(){
+          this.formationsP.push({titre:'', duree:'',lieu:'',organisateur:'',datef:''})
+      },
         deleteFormation(format){
              const f =  this.formations.filter(item => item !== format) 
              this.formations = f                
+               
+            },
+        deleteFormatP(formatp){
+             const fc =  this.formationsP.filter(item => item !== formatp) 
+             this.formationsP = fc                
                
             },
       createTreeRoot(){
