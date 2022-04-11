@@ -188,8 +188,8 @@ export default {
 
         if (this.user && this.user.user_level === 1){
             items.push({  icon: 'mdi-clipboard-outline',
-            title: 'Gestion Formation',
-            to: '/saisieEleveOp' })
+            title: 'Recensement',
+            to: '/recensement' })
 
             items.push({  icon: 'mdi-certificate',
             title: 'Décision',
@@ -308,6 +308,11 @@ export default {
                  items.push({  icon: 'mdi-home',
                title: 'Liste Ecole',
                to: '/requeteEcole'})
+               
+                 items.push({  icon: 'mdi-clipboard-outline',
+                title: 'Recensement',
+               to: '/recensement' })
+
 
                  items.push({  icon: 'mdi-human',
                title: 'Liste Enseignant',
@@ -317,10 +322,7 @@ export default {
                title: 'Valider Responsable',
                to: '/validerResponsable'})
 
-                items.push({  icon: 'mdi-clipboard-outline',
-                title: 'Gestion Formation',
-               to: '/saisieEleveAdmin' })
-
+              
               items.push({  icon: 'mdi-certificate',
               title: 'Décision',
               to: '/decisionAdmin' })

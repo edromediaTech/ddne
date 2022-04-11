@@ -4,11 +4,11 @@
     fluid
     tag="section"
   >
-    <base-material-card
+    <!-- <base-material-card
       icon="mdi-home"
       title="Gestion ecoles"
       class="px-5 py-3 mt-4"
-    >
+    > -->
   <v-stepper v-model="e1">
     <v-stepper-header  >
             <v-stepper-step :complete="e1 > 1"   step="1" > Identification </v-stepper-step>
@@ -18,10 +18,7 @@
             <v-divider></v-divider>      
 
             <v-stepper-step  :complete="e1 > 3"   step="3">   Responsable</v-stepper-step>  
-                <v-divider></v-divider>
-
-            <!-- <v-stepper-step  :complete="e1 > 4"   step="4">   Etat</v-stepper-step>  
-                <v-divider></v-divider> -->
+                <v-divider></v-divider>           
 
             <v-stepper-step   step="4"  > Etat Batiment </v-stepper-step>
        </v-stepper-header>
@@ -29,39 +26,54 @@
 <!-- *************************************  Identification ecole ************************** -->
 <v-stepper-items>
  <v-stepper-content step="1">
-     <v-card   class="mb-12 pa-4" color="grey lighten-1"   height="auto"  >
-        
-        <v-row>
+    <span class="mt-4 p-4 text-h5"> <v-icon x-large color="blue" class="mb-2">mdi-information-variant</v-icon> Identification Ecole</span>
+     <v-card   class="mb-12 pa-4" color="grey lighten-3"   height="auto"  >
+       
+        <v-row >
             <v-col   cols="12"  md="4"  sm="6">
-                <v-text-field v-model="ec.nom"  :rules="nameRules"  label="Nom Ecole*"  required></v-text-field>
+                <v-text-field v-model="ec.nom"  :rules="[v => !!v || msgrules]"   maxlength="100" label="Nom Ecole*"  prepend-icon="mdi-home" required></v-text-field>
             </v-col>
 
             <v-col   cols="12"  md="4" sm="6">
-                <v-text-field v-model="ec.code" :rules="nameRules"  label="Code"  required  ></v-text-field>
+                <v-text-field v-model="ec.code"  label="Code" maxlength="14" prepend-icon="mdi-license"></v-text-field>
             </v-col>
 
             <v-col   cols="12"   md="4" sm="6" >
-                    <v-text-field v-model="ec.fondateur" :rules="nameRules"  label="Fondateur"  required  ></v-text-field>
+                    <v-text-field v-model="ec.fondateur"   label="Fondateur"  maxlength="50"  prepend-icon="mdi-human" ></v-text-field>
             </v-col>
             <v-col   cols="12"   md="4" sm="6">
-                <v-text-field v-model="ec.sigle" :rules="nameRules"  label="Sigle"  required  ></v-text-field>
+                <v-text-field v-model="ec.sigle"  label="Sigle"  maxlength="10" prepend-icon="mdi-alphabetical-variant"></v-text-field>
             </v-col>
             <v-col   cols="12"   md="4" sm="6">
-                <v-text-field v-model="ec.tel" :rules="nameRules"  label="Tel"  required  ></v-text-field>
+                 <v-text-field
+                      v-model="ec.tel"
+                      label="Tel"
+                      prepend-icon="mdi-phone-outline" 
+                         type="number"                         
+                         counter="12"                  
+                    />
             </v-col>
             <v-col   cols="12"   md="4" sm="6">
-                <v-text-field v-model="ec.telephone" :rules="nameRules"  label="Tel Additionnel"  required  ></v-text-field>
+                 <v-text-field
+                      v-model="ec.telephone"
+                      label="Tel Additionnel"
+                      prepend-icon="mdi-phone"
+                      type="number"
+                    />
             </v-col>                            
 
             <v-col  cols="12"  md="4" sm="6">
-             <v-text-field  v-model="ec.email"  :counter="25" :rules="emailRules"  label="E-mail"  required ></v-text-field>
+             <v-text-field  v-model="ec.email"   :rules="emailRules"  label="E-mail"  prepend-icon="mdi-mail"></v-text-field>
             </v-col>
             <v-col
                 cols="12"    sm="6"   md="4" >
                         <v-select
                           v-model="ec.categorie"
                           :items="categories"
-                          label="Categorie"                          
+                          label="Categorie*" 
+                          required 
+                           :rules="[v => !!v || msgrules]" 
+                           prepend-icon="mdi-grid"                       
                         />
                       </v-col>
                 <v-col
@@ -69,7 +81,10 @@
                         <v-select
                           v-model="ec.niveau"
                           :items="niveauens"
-                          label="Niveau Enseignement"                          
+                          label="Niveau Enseignement*" 
+                           required 
+                           :rules="[v => !!v || msgrules]"
+                           prepend-icon="mdi-grid-large"                          
                         />
                       </v-col>
                     <v-col
@@ -77,14 +92,19 @@
                         <v-select
                           v-model="ec.vacation"
                           :items="vacations"
-                          label="Vacation"                          
+                          label="Vacation*" 
+                           required 
+                           :rules="[v => !!v || msgrules]"  
+                           prepend-icon="mdi-clock"                        
                         />
                       </v-col>
                       <v-col   cols="12"    sm="6"       md="4"   >
-                    <span>Secteur</span>
+                    <span>Secteur*</span>
                          <v-radio-group
                           v-model="ec.secteur"
                           row
+                           required 
+                           :rules="[v => !!v || msgrules]" 
                          >
                         <v-radio                                                  
                           label="Public" 
@@ -100,12 +120,12 @@
                 </v-col>
                 
                  <v-col   cols="12"    sm="6"       md="4"   >
-                      <span>Location</span>
-                     <v-radio-group  v-model="ec.location" row>                   
+                      <span>Location*</span>
+                     <v-radio-group  v-model="ec.location" row  required 
+                           :rules="[v => !!v || msgrules]" >                   
                         <v-radio                                                  
                           label="Non" 
-                          value="0" 
-                                                 
+                          value="0"                                                 
                         />
                          <v-radio                                                  
                           label="Oui" 
@@ -114,8 +134,9 @@
                         </v-radio-group>
                 </v-col>
                  <v-col   cols="12"    sm="6"       md="4"   >
-                    <span>Milieu</span>
-                      <v-radio-group  v-model="ec.milieu" row> 
+                    <span>Milieu*</span>
+                      <v-radio-group  v-model="ec.milieu" row  required 
+                           :rules="[v => !!v || msgrules]" > 
                         <v-radio                                                   
                           label="Urbain" 
                           value="1" 
@@ -128,12 +149,14 @@
                       </v-radio-group>
                 </v-col>
 
-                 <v-col   cols="12"    sm="6"       md="4"   >                     
-                    <span>Statut</span>
-                      <v-radio-group  v-model="ec.statut" row> 
+                 <v-col   cols="12"    sm="6"       md="6"   >                     
+                    <span>Statut*</span>
+                      <v-radio-group  v-model="ec.statut" row  required 
+                           :rules="[v => !!v || msgrules]"  > 
                         <v-radio                                                   
                           label="Fonctionnel" 
-                          value="1"                                                 
+                          value="1" 
+                                                                          
                         />
                          <v-radio                                                   
                           label="Non Fonctionnel" 
@@ -147,7 +170,12 @@
         <v-row>
             <v-col cols="12" md="9" sm="6"></v-col>
             <v-col cols="12" md="3" sm="6">            
-        <v-btn  color="primary" small title="continue" @click="e1 = 2" >  <v-icon>mdi-arrow-right-bold</v-icon> </v-btn>
+        
+        <v-btn :disabled="ec.nom === '' || ec.categorie === '' || ec.vacation === '' || ec.milieu=== '' || ec.niveau ===''"
+         
+         color="primary" small title="continue" @click="e1 = 2" > 
+           <v-icon>mdi-arrow-right-bold</v-icon>
+            </v-btn>
         <v-btn small color="cyan" title="Quitter" class="ma-2 pa-0"> <v-icon>mdi-close</v-icon>  </v-btn>
             </v-col>
         </v-row>
@@ -155,113 +183,123 @@
 </v-stepper-content>
 <!-- ********************************* Localisation ********************* -->
 <v-stepper-content step="2">
-    <v-card  class="mb-12 pa-4"  color="grey lighten-1"   height="auto">
+   <span class="mt-4 p-4 text-h5"> <v-icon x-large color="blue" class="mb-2">mdi-map-marker-outline</v-icon> Localisation Ecole {{ec.code}} {{ec.nom}}</span>
+    <v-card  class="mb-12 pa-4"  color="grey lighten-3"   height="auto">
         <v-row>
             <v-col  cols="12"   sm="6"    md="4">
                  <v-select                            
                             v-model="departement"
                             :items="departements"
                             :rules="[v => !!v || msgrules]"
-                            label="Département"
+                            label="Département*"
                             required
-                            @change="getData('departements', departement)"
-                            ></v-select>
-                           
+                            prepend-icon="mdi-earth"
+                              @change="getData('departements', departement)"
+                            ></v-select>                           
                           </v-col>
                           <v-col  v-if = "districts.length > 0" cols="12" 
                             sm="6"
-                               md="4">
+                               md="3">
                               <v-select                           
                             v-model="district"
                             :items="districts"
                             :rules="[v => !!v || msgrules]"
-                            label="District"
+                            label="District*"
                             required
+                              prepend-icon="mdi-grid"
                             @change="getData('districts', district)"
                             ></v-select>                           
                           </v-col>
                           <v-col  v-if = "communes.length > 0"
                            cols="12"
                             sm="6"
-                               md="4">
-                           <v-select
-                           
+                               md="3">
+                           <v-select                           
                             v-model="commune"
                             :items="communes"
                             :rules="[v => !!v || msgrules]"
-                            label="Commune"
+                            label="Commune*"
                             required
+                              prepend-icon="mdi-earth"
                             @change="getData('communes', commune)"
                             ></v-select>
                            
                           </v-col>
                           <v-col v-if = "zones.length > 0" cols="12"
                               sm="6"
-                              md="3">
+                              md="2">
                            <v-select
                            
                             v-model="ec.zone_id"
                             :items="zones"
                             :rules="[v => !!v || msgrules]"
-                            label="Zones"
-                            required                          
+                            label="Zone*"
+                              prepend-icon="mdi-grid"
+                            required 
+                            @change="get_sectionec"                         
                             ></v-select>
                            
                           </v-col>
-                          <v-col  cols="12"
-                              sm="6"
-                              md="4">
-                           <v-select
-                           
+                          <v-col  v-if = "sectioncoms.length > 0"
+                              cols="12"
+                              sm="6"   md="4">
+                           <v-select                          
                             v-model="ec.section_communale_id"
                             :items="sectioncoms"
                             :rules="[v => !!v || msgrules]"
-                            label="Section Communale"
+                            label="Section Communale*"
+                              prepend-icon="mdi-earth"
                             required
                           
                             ></v-select>                           
                           </v-col>
                      <v-col  cols="12"  md="5"  sm="6">
-             <v-text-field  v-model="ec.adresse"  :rules="nameRules"  label="Adresse"  required ></v-text-field>
+             <v-text-field  v-model="ec.adresse"  :rules="[v => !!v || msgrules]"  label="Adresse*"   prepend-icon="mdi-map-marker" required ></v-text-field>
             </v-col>
              <v-col cols="12" sm="6"   md="4">
                            <v-select                           
                             v-model="ec.acces"
                             :items="access"
+                            label="Accès*"
                             :rules="[v => !!v || msgrules]"
-                            label="Acces"
                             required                          
                             ></v-select>                           
                           </v-col>
               <v-col  cols="12"  md="4" sm="6" >
-                     <v-text-field  v-model="ec.latitude" label="Latitude"  required ></v-text-field>
+                     <v-text-field  v-model="ec.latitude" label="Latitude" prepend-icon="mdi-longitude"  ></v-text-field>
             </v-col>
               <v-col  cols="12"  md="4" sm="6" >
-                    <v-text-field  v-model="ec.longitude" label="Longitude"  required ></v-text-field>
+                    <v-text-field  v-model="ec.longitude" label="Longitude" prepend-icon="mdi-latitude"></v-text-field>
             </v-col>                                           
         </v-row>
     </v-card>
     <v-row>
             <v-col cols="12" md="9" sm="6"></v-col>
             <v-col cols="12" md="3" sm="6"> 
-     <v-btn small title="Continuer"  color="primary"   @click="e1 = 3" > <v-icon>mdi-arrow-right-bold</v-icon> </v-btn>
-     <v-btn small title="Precedent" color="Secondary"   class="ma-2"  @click="e1 = 1">  <v-icon>mdi-arrow-left-bold</v-icon></v-btn>
+     
+     <v-btn   :disabled="ec.district === '' || ec.commune === '' || ec.zone === '' || ec.section_communale_id === '' || ec.adresse === '' || ec.acces === ''"
+    
+           small title="Continuer"  color="primary"   @click="e1 = 3" > 
+         <v-icon>mdi-arrow-right-bold</v-icon>
+      </v-btn>
+     <v-btn small title="Precedent" color="Secondary"   class="ma-1"  @click="e1 = 1">  <v-icon>mdi-arrow-left-bold</v-icon></v-btn>
      <v-btn small title="Quitter" color="cyan"> <v-icon>mdi-close</v-icon>  </v-btn>
             </v-col>
     </v-row>
 </v-stepper-content>
 
-  <!-- *************** Responsable *************************8 -->
+  <!-- *************** Responsable ************************* -->
 
 <v-stepper-content step="3">
+       <span class="mt-4 p-4 text-h5">  <v-icon x-large color="blue" class="mb-2">mdi-account-tie</v-icon> Responsable Ecole {{ec.code}} {{ec.nom}}</span>
     <v-card  class="mb-12 pa-4"   color="grey lighten-1"  height="auto"  >
         <v-row>
             <v-col   cols="12"  md="6" >
-            <v-text-field   v-model="ec.nomd" :rules="nameRules"    label="Nom Directeur"
+            <v-text-field   v-model="ec.nomd" :rules="[v => !!v || msgrules]"  label="Nom Directeur*"   prepend-icon="mdi-human"
                 required  ></v-text-field>
             </v-col>
              <v-col   cols="12"  md="6" >
-            <v-text-field   v-model="ec.prenom" :rules="nameRules"    label="Prenom Directeur"
+            <v-text-field   v-model="ec.prenom" :rules="[v => !!v || msgrules]"    label="Prenom Directeur*" prepend-icon="mdi-human"
                 required  ></v-text-field>
             </v-col>
             <v-col
@@ -286,12 +324,14 @@
             readonly
             v-bind="attrs"
             v-on="on"
+        
           ></v-text-field>
         </template>
         <v-date-picker
           v-model="ec.datenais"
           no-title
           scrollable
+          
         >
           <v-spacer></v-spacer>
           <v-btn
@@ -304,6 +344,7 @@
           <v-btn
             text
             color="primary"
+                @blur="check_age"
             @click="$refs.menu.save(ec.datenais)"
           >
             OK
@@ -311,69 +352,152 @@
         </v-date-picker>
       </v-menu>
     </v-col>
-                    <v-col   cols="12"  md="5" sm="6" >
-            <v-text-field v-model="ec.lieunais" :rules="nameRules"   label="Lieu de Naissance"
-                required ></v-text-field>
+          <v-col   cols="12"  md="5" sm="6" >
+            <v-text-field v-model="ec.lieunais" :rules="[v => !!v || msgrules]"  label="Lieu de Naissance*" required
+                prepend-icon="mdi-map-marker" @blur="check_age" ></v-text-field>
             </v-col>
              <v-col   cols="12"    sm="6"       md="3"   >
-                    <span>Sexe</span>
+                    <span>Sexe*</span>
                       <v-radio-group  v-model="ec.sexe" row> 
                         <v-radio                                                   
                           label="M" 
-                          value="1"                                                                              
+                          value="1" 
+                          prepend-icon="mdi-human-male"                                                                             
                         />
                          <v-radio                                                 
                           label="F" 
-                          value="0"                                                    
+                          value="0" 
+                          prepend-icon="mdi-human-female"                                                   
                         />
                       </v-radio-group>
                 </v-col>
             
                  <v-col cols="12" md="4" sm="6">
-            <v-text-field  v-model="ec.cin"  :rules="nameRules"  type="number" :counter="10" label="CINU"  required ></v-text-field>
+            <v-text-field  v-model="ec.cin"  :rules="[v => !!v || msgrules]"  type="number" :counter="10" label="NINU"  required ></v-text-field>
             </v-col>
 
             <v-col  cols="12"   md="4" sm="6">
-            <v-text-field  v-model="ec.nif" :rules="nameRules"  :counter="15"  label="NIF"  required ></v-text-field>
+              <v-text-field-simplemask
+                  v-model="ec.nif"
+                  :label="label"
+                  :properties="{
+                    prefix: '',
+                    suffix: '',
+                    readonly: false,
+                    disabled: false,
+                    outlined: false,
+                    clearable: false,
+                    placeholder: '000-000-000-0',
+                    }"
+                  :options="{
+                    inputMask: '###-###-###-#',
+                    outputMask: '###-###-###-#',
+                    empty: null,
+                    applyAfter: false,
+                    alphanumeric: false,
+                    lowerCase: false,
+                  }"
+                  :focus="focus"
+                  @focus="focus = false"
+                /> 
             </v-col>
 
             <v-col   cols="12"   md="4" sm="6">
-                <v-text-field v-model="ec.teld" :rules="nameRules"  type="number" label="Tel"  required  ></v-text-field>
+                 <v-text-field-simplemask
+                    v-model="ec.teld"
+                    label="Tel"
+                    :properties="{
+                      prefix: '',
+                      suffix: '',
+                      readonly: false,
+                      disabled: false,
+                      outlined: false,
+                      clearable: true,
+                      placeholder: '(509)3999999',
+                    }"
+                    :options="{
+                      inputMask: '(###) ####-####',
+                      outputMask: '###########',
+                      empty: null,
+                      applyAfter: false,
+                      alphanumeric: true,
+                      lowerCase: false,
+                    }"
+                    :focus="focus"
+                    @focus="focus = false"
+                  />
             </v-col>
             <v-col   cols="12"   md="4" sm="6">
-                <v-text-field v-model="ec.telephoned" :rules="nameRules"  type="number" label="Tel Additionnel"  required  ></v-text-field>
+                <v-text-field-simplemask
+                    v-model="ec.telephoned"
+                    label="Tél Additionnel"
+                    :properties="{
+                      prefix: '',
+                      suffix: '',
+                      readonly: false,
+                      disabled: false,
+                      outlined: false,
+                      clearable: true,
+                      placeholder: '(509)3999999',
+                    }"
+                    :options="{
+                      inputMask: '(###) ####-####',
+                      outputMask: '###########',
+                      empty: null,
+                      applyAfter: false,
+                      alphanumeric: true,
+                      lowerCase: false,
+                    }"
+                    :focus="focus"
+                    @focus="focus = false"
+                  />
             </v-col>                            
 
             <v-col  cols="12"  md="4" >
-             <v-text-field  v-model="ec.emaild"   :rules="emailRules"  label="E-mail"  required ></v-text-field>
+             <v-text-field  v-model="ec.emaild"   label="E-mail"  prepend-icon="mdi-mail-outline"></v-text-field>
             </v-col>
             <v-col   cols="12"   sm="6"    md="4">
                         <v-select                           
                             v-model="ec.communed"
-                            :items="communes"
-                            :rules="[v => !!v || msgrules]"
+                            :items="communeds"
+                            :rules="[v => !!v || msgrules]"                          
                             label="Commune"
-                            required                           
+                            required 
+                              prepend-icon="mdi-earth"  
+                              @change="get_sectiondis"                     
                             ></v-select>                           
                           </v-col>
                      <v-col   cols="12"   sm="6"    md="4">
                         <v-select                           
                             v-model="ec.section_communaled_id"
-                            :items="sectioncoms"
+                            :items="sectioncomds"
                             :rules="[v => !!v || msgrules]"
                             label="Section Communale"
+                            prepend-icon="mdi-earth"
                             required                           
                             ></v-select>                           
                           </v-col>
+                         
+                           <v-progress-circular
+                            v-show="visible"
+                            class="mt-4"
+                            :size="20"
+                            :width="2"
+                            color="info"
+                            indeterminate
+                            />
                            <v-col   cols="12"  md="4"  >
-            <v-text-field   v-model="ec.adressed"  :rules="nameRules"    label="Adresse" required ></v-text-field>
+            <v-text-field   v-model="ec.adressed"  :rules="[v => !!v || msgrules]"    label="Adresse" required prepend-icon="mdi-map-marker"></v-text-field>
             </v-col>
         </v-row>
             </v-card>
      <v-row>
             <v-col cols="12" md="8" sm="6"></v-col>
             <v-col cols="12" md="4" sm="6"> 
-        <v-btn small  title="Continuer" color="primary"  @click="e1 = 4" > <v-icon>mdi-arrow-right-bold</v-icon> </v-btn>
+             
+        <v-btn  :disabled="ec.nomd === '' || ec.prenom === ''  || ec.lieunais === '' || ec.adressed === '' || ec.sexe ===''"
+      
+        small  title="Continuer" color="primary"  @click="e1 = 4" > <v-icon>mdi-arrow-right-bold</v-icon> </v-btn>
         <v-btn small title="Precedent" color="Secondary"   class="ma-2" @click="e1 = 2"> <v-icon>mdi-arrow-left-bold</v-icon></v-btn>
         <v-btn small title="Quitter" color="cyan">  <v-icon>mdi-close</v-icon> </v-btn>
             </v-col>
@@ -383,25 +507,28 @@
  <!-- ********************** Etat ******************* -->
 
     <v-stepper-content step="4">
-           <v-card   class="mb-12 pa-4"  color="grey lighten-1"  height="auto" >          
+      <span class="mt-4 p-4 text-h5"><v-icon x-large color="blue" class="mb-2">mdi-home</v-icon> Etat Physique {{ec.code}} {{ec.nom}}</span>
+    
+           <v-card   class="mb-12 pa-4"  color="grey lighten-3"  height="auto" >          
+      <v-row>
 
-               <v-row v-if="questions.length >0" class="ma-2">                   
+               <span v-if="questions.length >0" class="ma-2">                   
                     <span v-for="q in questions" :key="q.id" >                                      
                         <span v-if ="q.type_q === 'select'">                     
                             <v-col cols="12" md="12" sm="6" >
-                           <v-select                           
-                            v-model="q.option_id"
-                            :items="options"
-                            :rules="[v => !!v || msgrules]"
-                            :label="q.libelle"
-                            required                           
-                            ></v-select>                              
-                                 </v-col>                      
+                                <v-select                           
+                                  v-model="q.option_id"
+                                  :items="options"
+                                  :rules="[v => !!v || msgrules]"
+                                  :label="q.libelle"
+                                  required                           
+                                  ></v-select>                              
+                              </v-col>                      
                         </span>
                                       
                        <span v-else > 
                                                
-                           <v-col cols="12" md="12" sm="6" class="carte">                      
+                           <v-col cols="12" md="12" sm="6">                      
                                      <label><b>{{q.libelle}}* </b></label>                       
                                <span v-for="(opt) in options" :key="opt.value">
                                   <span v-if="opt.question_id === q.id" >                                 
@@ -412,7 +539,8 @@
                                     </span>
                                 </span> 
                            </v-col>                                                      
-                        </span>    
+                       </span>    
+                    </span>
                     </span> 
                 </v-row>
                <v-row>
@@ -471,7 +599,8 @@
            <v-row>
                 <v-col cols="12" md="9" sm="6"></v-col>
                <v-col cols="12" md="3" sm="6"> 
-                    <v-btn small title="soumettre"  color="primary"  @click="store" > 
+                    <v-btn :disabled=" ec.dateEval ===null"
+                            small title="soumettre"  color="primary"  @click="store" > 
                         <v-icon>mdi-content-save</v-icon>  
                     </v-btn>
                     <v-btn small title="Precedent"  class="ma-2" color="Secondary"   @click="e1 = 3"> 
@@ -485,7 +614,7 @@
     </v-stepper-content>
     </v-stepper-items>
   </v-stepper>
-   </base-material-card>
+   <!-- </base-material-card> -->
   </v-container>
 </template>
 <script>
@@ -493,16 +622,22 @@
     data () {
       return {
         e1: 1,
+          label: "NIF",
+    focus: false, 
+    visible:false,
         valid: false,
          departement: '',         
         ecole: '',
         district:'',
         commune:'',
+        communed:'',
         departements: [],
         districts: [],
         communes: [],
+        communeds: [],
         zones: [],
      sectioncoms:[],
+     sectioncomds:[],
      questions:[],
      options:[],
      repeb: [],
@@ -523,7 +658,7 @@
               fondateur:'',  sigle:'',  niveau:'',  categorie:'', milieu:'', secteur:'', vacation:'', location:'', 
               adressed:'', adresse: '',  lieunais: '',    sexe: '',   telephoned:'',   communed:'',  emaild: '',
              longitude:'', latitude:'', code:'', statut:'', acces:'', nom:'', section_communaled_id:'', 
-             section_communale_id:'', datenais: null,  zone_id: '', dateEval:null},
+             section_communale_id:'', datenais: '',  zone_id: '', dateEval:null},
       menu: false,
       modal: false,
       menu2: false,
@@ -538,9 +673,9 @@
       ],
       
       emailRules: [
-        v => !!v || 'E-mail est obligatoire',
-        v => /.+@.+/.test(v) || 'E-mail doit être valide',
-      ],
+              (v) => !!v || 'E-mail obligatoire',
+              (v) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail doit être valide'
+            ],
       }
     },
     created(){
@@ -549,7 +684,7 @@
     mounted () {      
       this.get_dept() 
       this.get_Etat() 
-          
+               
     },
 
     methods:{
@@ -562,14 +697,27 @@
                   })
                   this.visible = false
           },
+          
 
-          async get_Etat(){             
+          getEmptyQuestion(){
+              this.questions.forEach((q)=>{
+                if(q.option_id.length === 0)
+                return false
+              })
+              return true
+          },
+
+
+          async get_Etat(){  
+             this.visible = true           
              this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
              await this.$axios.get( 'get-etat').then( response => {
                   this.sectioncoms = response.data.sectioncommunales
+                  this.communeds = response.data.communeds
                   const quest = response.data.questions
                   this.questions = this.addRestoQuest(quest)
-                  this.options = response.data.options                
+                  this.options = response.data.options   
+                   this.visible = false             
                   })                 
           },
 
@@ -584,8 +732,7 @@
                    this.visible = true
                    this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
                 this.$axios.get( 'get-departement/'+ this.departement).then( response => {
-                  this.districts = response.data;
-                  
+                  this.districts = response.data;                  
                    this.visible = false 
                 })
                
@@ -596,19 +743,16 @@
                   this.visible = true
                    this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
                  this.$axios.get( 'get-district/'+ this.district).then( response => {
-                  this.communes = response.data;
-                   
+                  this.communes = response.data                   
                     this.visible = false
                 })
                
               }
-              if (data === 'communes'){
-                
+              if (data === 'communes'){                
                   this.visible = true
                    this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
                  this.$axios.get( 'get-commune/'+ this.commune).then( response => {
-                  this.zones = response.data;
-                  
+                  this.zones = response.data;                  
                    this.visible = false
                  })
                 
@@ -634,23 +778,66 @@
               }
               
              },
-
+             async get_sectiondis(){
+              this.visible = true              
+              if(this.communeds.length > 0){
+             this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
+            await this.$axios.get('sectioncom/'+this.ec.communed).then( response => {
+              console.log(response.data)
+                  this.sectioncomds = response.data;
+                  })
+              }
+                  this.visible = false
+          },
+ async get_sectionec(){
+              this.visible = true              
+              if(this.zones.length > 0){
+             this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
+            await this.$axios.get('sectioncom/'+this.commune).then( response => {            
+                  this.sectioncoms = response.data;
+                  })
+              }
+                  this.visible = false
+          },
         async store(){
-                 this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
-                const data = {ecole: this.ec, etat: this.questions}
-                
-            await this.$axios.post('store-data-ecole',data).then(response => { 
-              console.log(response.data)              
-                if(response.data === 1) {                              
-                  this.$notifier.showMessage({ content: 'Succes', color: 'success' })                   
+            this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
+          
+                if(this.getEmptyQuestion === false){
+                   this.$notifier.showMessage({ content: 'Une option au moins doit-être choisie pour chaque question.', color: 'error' }) 
+                  return false
+                }
+               const data = {ecole: this.ec, etat: this.questions}                
+            await this.$axios.post('store-data-ecole',data).then(response => {                                     
+                if(response.data === 1) { 
+
+                  this.$notifier.showMessage({ content: 'Bravo!!! Operation reussie avec succès!!!', color: 'success' })                              
                 }
                 else{
-                     this.$notifier.showMessage({ content: 'Echec: '+response.data, color: 'error' })
+                     this.$notifier.showMessage({ content: 'Echec!', color: 'error' })
                 }
              })
               this.loading =false
         },
         
+        getAge(dateString) {
+            const today = new Date();
+            const birthDate = new Date(dateString);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+    },
+
+  check_age(){
+          if(parseInt(this.getAge(this.ec.datenais)) < 22){          
+            this.$notifier.showMessage({content: 'Votre age ne correspond pas a ce poste!', color: 'error' })     
+                  return false;
+           }         
+           return true;
+      },
+
       getCoordinates () {
         this.$getLocation({
           enableHighAccuracy: false, // false defaults to false
@@ -658,8 +845,7 @@
           maximumAge: 0, // defaults to 0
 
         })
-          .then(coordinates => {
-            console.log(coordinates)
+          .then(coordinates => {            
             this.ec.latitude = coordinates.lat
             this.ec.longitude = coordinates.lng
           })
@@ -702,8 +888,9 @@
 </script>
 <style scoped>
 .carte{
-  border: solid 1px black;
+  border: solid 1px rgb(132, 194, 230);
   margin: 30px;
+  
   
 }
 </style>

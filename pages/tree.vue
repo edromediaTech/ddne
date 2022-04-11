@@ -87,7 +87,7 @@
                           
                         />
                       </v-col>
-                       <v-col
+                       <!-- <v-col
                         cols="12"
                         sm="6"
                         md="6"
@@ -96,10 +96,11 @@
                   <v-text-field                   
                           v-model="prof.date_naissance"                        
                           label="Date Naissance"                         
-                          type="date"                         
+                          type="date"  
+                           @blur="check_age"                       
                          />
-                      </v-col>
-                   <!-- <v-col cols="12" sm="6" md="6" > 
+                      </v-col> -->
+                    <v-col cols="12" sm="6" md="6" > 
                       <v-menu
                           ref="menu6"
                           v-model="menu6"
@@ -139,12 +140,14 @@
                               text
                               color="primary"
                               @click="$refs.menu6.save(prof.date_naissance)"
+                               @blur="check_age"
                             >
                               OK
                             </v-btn>
                           </v-date-picker>
                         </v-menu>
-                       </v-col> -->
+                       </v-col> 
+
                       <v-col   cols="12"
                               sm="6"
                               md="6">
@@ -155,6 +158,7 @@
                             label="Département de Naissance*"
                             required
                             @change="get_com"
+                             @blur="check_age"
                             ></v-select>
                            
                           </v-col>
@@ -407,12 +411,11 @@
                         md="6"
                       >
                         <v-text-field                    
-                          v-model="formation.nomf"                        
+                          v-model="formation.autre"                        
                           label="Saisie votre formation"
                            :rules="[v => !!v || msgrules]"
                            maxlength="25"
-                           required
-                          
+                           required                          
                         />
                       </v-col>  
                  
@@ -438,8 +441,7 @@
                         
                   <v-text-field                   
                           v-model="formation.date_debut"                        
-                          label="Date debut"
-                          mask="01 / 01 / 1990"
+                          label="Date debut"                         
                           type="date"                         
                           
                         />
@@ -454,7 +456,7 @@
                           label="Date fin"
                           type="date"
                           locale="fr"
-                           
+                            @blur="check_age"
                           
                         />
                       </v-col>            
@@ -723,7 +725,7 @@
                           
                         />
                       </v-col>
-       <v-col cols="12" sm="6" md="12" >  
+       <v-col cols="12" sm="12" md="12" lg="12">  
             <v-treeview
               v-model="trees"   
               :items="items"
@@ -817,7 +819,7 @@
               (v) => !!v || 'E-mail obligatoire',
               (v) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail doit être valide'
             ],
-              formations :[{nomf:'', lieu:'', date_debut:null, date_fin:null}],
+              formations :[{nomf:'', lieu:'', date_debut:null, date_fin:null, autre:''}],
               formationsP :[{titre:'', duree:'',lieu:'',organisateur:'',datef:''}],
             
         menu: false,
@@ -953,39 +955,25 @@
               }                            
      },
 
-    //  test_date(){
-    //  //  (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
-    //    const date = new Date()
-    //     const daten = new Date(this.prof.date_naissance)              
-    //       alert(daten.getTime())
-    //      if(daten.getTime() > (date) ){
-    //        this.$notifier.showMessage({ content: 'Vous n\'êtes pas encore majeur !', color: 'error' }) 
-    //               return false;
-    //        }
-    //  },
+    
 
   async store_prof(){ 
-    const datedeb = new Date(this.formation.date_debut)
-        const datefin = new Date(this.formation.date_fin)              
-         if(datedeb.getTime() > datefin.getTime() ){
-            this.$notifier.showMessage({ content: 'La Date de la fin ne peut pas etre inferieure a la date du debut !', color: 'error' })     
-              return false;
-         } 
-            
+                
                             
          if(!this.arbrecomplete())         
              return false
             this.reformatTreeData()
 
          this.visible = true 
-        
+          this.formations.nomf = this.formations.autre
          const donnees ={formation:this.formations, prof:this.prof, formatp:this.formationsP,
-                          affectation:this.affectations, matiere:this.matieres, niveau:this.niveaux}
-                            this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')           
+                        affectation:this.affectations, matiere:this.matieres, niveau:this.niveaux, formprof:this.formatc}
+
+          this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')           
         await this.$axios.post('store-enseignant',JSON.stringify(donnees)).then(res => {        
           if(res.data.reponse === 1){
                 this.$notifier.showMessage({content:'Succes', color:'success'})
-                    this.$notifier.showMessage({content:'Succès!!!', color:'success'})     
+                this.$notifier.showMessage({content:'Succès!!!', color:'success'})     
                 if(res.data.message.length > 0) 
                 this.$notifier.showMessage({content:res.data.message, color:'error'})  
                 return true 
@@ -1017,7 +1005,7 @@
       },
 
   ajouterFormation(){
-               this.formations.push({nomf:'', lieu:'', date_debut:null, date_fin:null})
+               this.formations.push({nomf:'', lieu:'', date_debut:null, date_fin:null, autre:''})
             },
       addFormatContinue(){
           this.formationsP.push({titre:'', duree:'',lieu:'',organisateur:'',datef:''})
@@ -1281,6 +1269,29 @@ getEtiquette(idnode){
                   })
              },
 
+         getAge(dateString) {
+            const today = new Date();
+            const birthDate = new Date(dateString);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+    },
+
+  check_age(){
+          if(parseInt(this.getAge(this.prof.date_naissance)) < 22){          
+            this.$notifier.showMessage({content: 'Votre age ne correspond pas a ce poste!', color: 'error' })     
+                  return false;
+           } 
+           if(parseInt(this.getAge(this.formation.date_debut)) > parseInt(this.formation.date_fin)){          
+            this.$notifier.showMessage({content: 'La date debut ne peut pas etre superieure a la date fin !', color: 'error' })     
+                  return false;
+           }         
+           return true;
+      },
+
   
   //     getIndice(elem){
        
@@ -1380,6 +1391,7 @@ getEtiquette(idnode){
     border: solid 1px rgb(177, 165, 189);
     border-top: white;
     border-radius: 10px;
-    margin-top:40px;
+    margin:20px;
+   
 }
 </style>

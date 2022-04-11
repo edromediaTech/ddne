@@ -132,7 +132,14 @@
               vertical
             /> -->
               <v-spacer />
+              <v-dialog
+              v-model="dialog"
+              max-width="auto"
+            >
+              
+  
              
+              </v-dialog>
            
            <download-excel             
                v-if="ecoles.length > 0"
@@ -188,15 +195,47 @@
                         >
                         <v-icon>mdi-home</v-icon>
                       </v-badge>
-               </v-row>      
-            
-           
-      </template>
-
-      
+               </v-row>           
+      </template>      
           <template #[`item.secteur`]="{ item }">
-          <span>{{item.secteur ? 'Public' : 'Privé' }} </span>
+           <span>{{item.secteur ? 'Public' : 'Privé' }} </span>
         </template> 
+
+         <template #[`item.actions`]="{item }">
+           {{item.ecole}}
+      <modalEcole ref="modalEcole" :part="parti" :departements="departements" :ecole="item" 
+        :options="options" :sectioncoms="sectioncoms" :communes="communes" :districts="districts" :zones="zones"/>
+      
+  <div class="text-center">
+    <v-menu offset-y>
+      <template #activator="{ on, attrs }">
+        <v-btn
+          color="primary"
+          dark
+          text
+          x-small
+          v-bind="attrs"
+          v-on="on"
+        >
+          <v-icon>mdi-pencil</v-icon>  <v-icon>mdi-menu-down</v-icon>           
+        </v-btn>
+      </template>
+     
+          <v-list>
+            <v-list-item
+              v-for="(item1, index) in items"
+              :key="index"
+              link
+              @click="openModal(item1, item)"       
+              
+            >        
+              <v-list-item-title>{{ item1.title }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        
+        </v-menu>
+      </div>        
+    </template>   
          
      </v-data-table>
      </base-material-card>
@@ -204,18 +243,36 @@
 </template>
 
 <script>
+import modalEcole from '../components/modalEditEcole.vue'
 export default {
+  components:{modalEcole},
    middleware: 'super', 
-        data: () => ({   
+        data: () => ({ 
+          parti: {}, 
+          nom:'',
+          dialog: false,
+           items: [
+        { title: 'Ecole' , id: 1},
+        { title: 'Directeur', id: 2 },
+        { title: 'Etat Batiment', id:3 },
+       ], 
              search:'',
       msgrules:'Champ obligatoire',   
+      nameRules: [
+        v => !!v || 'Champ obligatoire',
+       v => (v && v.length <= 25) || 'Name must be less than 25 character',
+      ],
           departement: '',
           texte:'',
+          secteur : 1,
           donnee:{ district: 0,    secteur:-1,   niveau:0,     commune: 0,     zone:0},
             departements: [],
             districts: [],
             communes: [],
             zones: [],
+            questions:[],
+            options:[],
+            etats:[],
             niveauens:[{text:'Tous', value:0},{text:'Prescolaire', value:'0001'}, {text:'Fondamental', value:'0110'},
                 {text:'Secondaire', value:'1000'},  {text:'Ecole Complete', value:'1111'},
                 {text:'Fondamental 1er et 2eme cycle', value:'0010'},
@@ -229,26 +286,65 @@ export default {
                 { text:'Secondaire inclus', value:'-1000'}
                 ],
             ecoles:[],
+             sectioncoms:[], 
             visible:false,
             headers: [ 
                  { text: 'Ecole', value: 'Ecole' },      
-                 { text: "Adresse", value: "Adresse" },
-                //  { text: "Niveau", value: "Niveau_Enseignement"},
-                //  { text: "Niveau1", value: "niveau1"},
+                 { text: "Adresse", value: "Adresse" },               
                  { text: "Accès", value: "Acces" },                     
                  { text: "Tel", value: "tel" },                     
                  { text: "Nom Directeur", value: "Nom_Directeur" },                     
-                 { text: "Prénom", value: "Prenom_Directeur" },                     
+                 { text: "Prénom", value: "Prenom_Directeur" },
+                  { text: 'Actions', value: 'actions', sortable: false },                     
              ]
           
     }),
 
     mounted () {      
       this.get_dept()
-     // this.get_niveau()     
+     this.get_Etat()     
     },
     methods:{
-          async get_dept(){
+      openModal(p, ecol){        
+        this.parti = p  
+        let e = this.ecoles.filter((eco) => eco.id === ecol.id)
+        e = e[0]
+        if(e.Sexe === 'M')
+          e.Sexe = 1
+          else
+          e.Sexe = 0
+        console.log(this.communes)
+         this.$refs.modalEcole.ec = {id:e.id, tel: e.tel,  email: e.Email_Ecole, telephone:e.Telephone, fondateur:e.Fondateur,  sigle:e.Sigle,  
+         niveau:e.niveau1,  categorie:e.categorie, milieu:e.milieu, secteur:e.secteur, vacation:e.vacation, 
+         location:e.location,   adresse: e.Adresse, longitude:e.Longitude, latitude:e.Latitude, code:e.Code,
+          statut:e.statut, acces:e.Acces, nom:e.Ecole, section_communale_id:e.section_communale_id, zone_id: e.zone_id, district: e.district_id, 
+          departement:e.departement_id, commune:e.commune_id}
+  
+          this.$refs.modalEcole.nomecole = e.Ecole
+          this.$refs.modalEcole.direct = {  adressed:e.Adresse_Directeur,   lieunais: e.Lieu_de_Naissance, sexe: e.Sexe,   telephoned:e.Tel_Directeur2,
+       communed:e.communed,  emaild: e.Email,  section_communaled_id:e.section_communaled_id, directeur_id:e.directeur_id,
+                teld:e.Tel_Directeur, nomd: e.Nom_Directeur,   prenom: e.Prenom_Directeur,   cin: e.CIN,    nif: e.NIF , datenais:e.Date_Naissance}
+       
+       const et = this.etats.filter((eta) => eta.ecole_id === ecol.id)
+        
+        this.questions.forEach((quest) => {
+            et.forEach((etat) => {
+              if(quest.id === etat.questionnaire_id)
+                 quest.option_id.push(etat.reponse)
+           })
+        })
+
+     
+       this.$refs.modalEcole.questions = this.questions
+       
+
+         console.log( this.$refs.modalEcole.questions)
+       this.$refs.modalEcole.dialog = true
+        
+      },
+         
+
+      async get_dept(){
               this.visible = true
              this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
             await this.$axios.get( 'departement').then( response => {
@@ -257,8 +353,15 @@ export default {
                   })
                   this.visible = false
           },
-
-        
+        async get_Etat(){             
+             this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
+             await this.$axios.get( 'get-etat').then( response => {
+                  this.sectioncoms = response.data.sectioncommunales
+                  const quest = response.data.questions
+                  this.questions = this.addRestoQuest(quest)
+                  this.options = response.data.options                
+                  })                 
+          },
 
           async get_ecole(){
            // alert(this.donnee.niveau)
@@ -266,7 +369,8 @@ export default {
              this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
                const data = this.donnee.district+'|'+this.donnee.commune+'|'+this.donnee.zone+'|'+this.donnee.secteur+'|'+this.donnee.niveau
                 await this.$axios.get( 'get-rapportecole/'+ data).then( response => {
-                        this.ecoles = response.data;
+                        this.ecoles = response.data.ecole;
+                        this.etats = response.data.etat
                   })
                 this.visible = false
           },
@@ -319,20 +423,25 @@ export default {
                    this.visible = false
                  })
                 
-              }
-              // if (data === 'zones'){
-                  
-              //     this.visible = true
-              //      this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
-              //    this.$axios.get( 'get-zone/'+ this.donnee.zone).then( response => {
-              //     this.ecoles = response.data;
-              //       this.ecoles.push({text:'Toutes', value: 0})
-              //      this.visible = false
-              //    })
-                
-              // }
+              }            
               
-             },
+            },
+
+           addRestoQuest(quest){     
+                if(quest.length > 0){          
+                  const data = []
+                  quest.forEach((q)=>{
+                      q.option_id = [];
+                      data.push(q)
+                  })
+                
+                   return data;
+                 }
+               return quest;
+            },
+
+        
+
     generateReport () {
        // this.texte =  this.get_text()
       
