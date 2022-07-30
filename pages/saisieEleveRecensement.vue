@@ -159,6 +159,50 @@
             <v-spacer />
              
                   <modal-recherche-eleve  class="mt-2 ml-4 mx-4 p-4" />
+                   <download-excel
+              v-if="eleves.length > 0"
+                class="mx-2 mt-2"
+              :data="eleves"
+              title="Telecharger en excel"
+              name="Liste eleves"
+              header="La Liste des eleves"
+            >
+              <v-img
+                max-height="40"
+                max-width="40"
+                src="images/excel.png"
+              />
+            </download-excel>
+              <v-btn
+                    v-if="eleves.length > 0"
+                      class="mx-2 mt-2"
+                     fab                      
+                      x-small
+                      color="primary"
+                    @click=" generateReport"              
+                  >
+                  PDF
+                  <client-only>
+                     <vue-html2pdf   ref="html2Pdf"
+                      :show-layout="false"
+                      :float-layout="true"
+                      :enable-download="true"
+                      :preview-modal="false"
+                      :paginate-elements-by-height="1300"
+                      filename="Suped-DDENE"
+                      :pdf-quality="2"
+                      :manual-pagination="false"
+                      pdf-format="letter"
+                      pdf-orientation="landscape"
+                      pdf-content-width="1000px"        
+                      
+                        >
+                      <template slot="pdf-content"  class="sectpdf">                             
+                          <table-print-eleve :eleves="eleves" :texte="texte"  :formation-c="formationC"/>                                
+                       </template>
+                      </vue-html2pdf>
+                  </client-only>             
+                  </v-btn>
             <v-dialog
               v-model="dialog"
               max-width="500px"

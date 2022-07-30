@@ -34,8 +34,7 @@
                   <tr v-for="eleve in eleves" :key="eleve.id"  style="page-break-inside: avoid">
                     <td  >{{eleve.eleve_id}} </td>
                     <td  >{{eleve.nom}}</td>
-                    <td  > {{eleve.prenom}}</td>
-                  
+                    <td  > {{eleve.prenom}}</td>                  
                      <td >{{eleve.datenais | moment(" Do-MM-YYYY")}}</td>
                      <td >{{eleve.lieunais}}</td>
                     <td v-if="eleve.sexe">M</td>
@@ -43,9 +42,12 @@
                      <td >{{eleve.prenom_mere}}</td>
                      <td >{{eleve.tel_persrep}}</td>                  
                    <td v-if="classe > 12" >{{eleve.annee}}</td>   
-                   <td v-if="classe > 12"  >{{eleve.nordre}}</td>             
-                    <td >{{eleve.moyenne}}</td>                    
-                   <td >{{eleve.mention}}</td>
+                   <td v-if="classe > 12 && eleve.nordre ==='00000000'" ></td> 
+                    <td v-else-if="classe > 12 ">{{eleve.nordre}}</td>      
+                    <td v-if="eleve.moyenne === 0" ></td>
+                    <td v-else>{{eleve.moyenne}}</td> 
+                  <td v-if="eleve.mention ==='Select mention'" ></td>
+                   <td v-else>{{eleve.mention}}</td>
                             
                   </tr>                                                                                       
                 </tbody>

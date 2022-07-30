@@ -1,7 +1,6 @@
 <template>
 <v-container>
-
-  <v-row>
+    <v-row>
      <v-col cols="12" sm="6" md="2" > 
      <v-text-field-simplemask
       v-model="prof.nif"
@@ -34,7 +33,7 @@
     <v-col cols="12" sm="6" md="6" > 
         
      <v-btn 
-        v-if=" prof.nif.length > 10 && !nifvalid" 
+        v-if="prof.nif.length > 10 && !nifvalid" 
             class="mb-2 mt-4"            
             color="primary" 
            small
@@ -63,6 +62,7 @@
                     maxlength="55"
                     :rules="[v => !!v || msgrules]"                   
                     required
+                    prepend-icon="mdi-account"
                      @blur="createTreeRoot"
                         /> 
                </v-col>
@@ -72,6 +72,7 @@
                             label="Prénom*"
                               maxlength="55"
                               :rules="[v => !!v || msgrules]"
+                               prepend-icon="mdi-account"
                               required
                                   /> 
                  </v-col>
@@ -84,6 +85,7 @@
                           v-model="prof.sexe"
                           :items="[{text:'Masculin', value:1}, {text:'Féminin', value:0}]"
                           label="Sexe*"
+                           prepend-icon="mdi-human-male-female"
                           
                         />
                       </v-col>
@@ -157,6 +159,7 @@
                             :rules="[v => !!v || msgrules]"
                             label="Département de Naissance*"
                             required
+                             prepend-icon="mdi-earth"
                             @change="get_com"
                              @blur="check_age"
                             ></v-select>
@@ -172,15 +175,18 @@
                             :items="communes"
                             :rules="[v => !!v || msgrules]"
                             label="Commune de Naissance*"
+                             prepend-icon="mdi-earth"
                             required                         
                             ></v-select>                           
                           </v-col>
                            <v-col cols="12" sm="6" md="6" > 
                         <v-text-field
                         v-model="prof.lieunais"
-                            label="Lieu de naissance"
+                            label="Lieu de naissance*"
                               maxlength="55"
                               placeholder="Localité, Section communale"
+                             prepend-icon="mdi-earth"
+                             hint="Localité, Section communale"
                               :rules="[v => !!v || msgrules]"
                               required
                                   /> 
@@ -199,9 +205,10 @@
                       <v-col cols="12" sm="6" md="6" > 
                       <v-text-field
                         v-model="prof.cin"
-                       label="CINU"
+                       label="NINU"
                             maxlength="15"
-                            type="number"                              
+                            type="number"
+                            hint="Numero Identification Nationale Unique"                              
                              /> 
                  </v-col>
                  <v-col cols="12" sm="6" md="6" > 
@@ -209,6 +216,7 @@
                         v-model="prof.adresse"
                             label="Adresse"
                               maxlength="55"
+                               prepend-icon="mdi-map-marker"
                               
                                   /> 
                  </v-col>
@@ -222,6 +230,7 @@
                             label="Département d'habitation*"
                             required
                             placeholder="Adresse"
+                             prepend-icon="mdi-earth"
                             @change="get_comH"
                             ></v-select>
                            
@@ -236,7 +245,8 @@
                             :items="communesh"
                             :rules="[v => !!v || msgrules]"
                             label="Commune d'habitation*"
-                              placeholder="Adresse"
+                              
+                               prepend-icon="mdi-earth"
                             required                         
                             ></v-select>                           
                           </v-col>
@@ -363,14 +373,16 @@
               <v-select
                  v-model="prof.nClassique"
                  :items="['Niveau Secondaire (3e à Philo)','Niveau Fondamental 3e Cycle(7e à 9e)','Niveau Fondamental 1e & 2e Cycle']"
-                   label="Formation Scolaire"                          
+                   label="Formation Scolaire"  
+                    prepend-icon="mdi-certificate"                        
                  />
         </v-col>           
      <v-col   cols="12"  sm="6"    md="6"  >
               <v-select
                  v-model="prof.nUniversitaire"
                  :items="['Certificat - Attestation','Diplome','Licence','Maitrise','Doctorat']"
-                   label="Niveau Universitaire"                          
+                   label="Niveau Universitaire" 
+                    prepend-icon="mdi-certificate"                         
                  />
         </v-col>           
   </v-row> 
@@ -401,17 +413,18 @@
                   v-model="formation.nomf"                          
                     :items="['Science de l\'Education','ENI','ENS','FIA','CEFEF','Capiste','Jardinière','Autres']"                   
                     label="Formation Academique*"
-                    required                    
+                    required 
+                    @change="SelectAutre(formation)"                   
                 ></v-select>
                
             </v-col> 
-             <v-col v-if="formation.nomf ==='Autres'"
+             <v-col v-if="choixAutre"
                         cols="12"
                         sm="6"
                         md="6"
                       >
                         <v-text-field                    
-                          v-model="formation.autre"                        
+                          v-model="formation.nomf"                        
                           label="Saisie votre formation"
                            :rules="[v => !!v || msgrules]"
                            maxlength="25"
@@ -430,6 +443,7 @@
                            :rules="[v => !!v || msgrules]"
                            maxlength="25"
                            required
+                            prepend-icon="mdi-map-marker"
                           
                         />
                       </v-col>
@@ -442,7 +456,8 @@
                   <v-text-field                   
                           v-model="formation.date_debut"                        
                           label="Date debut"                         
-                          type="date"                         
+                          type="date" 
+                           prepend-icon="mdi-calendar"                        
                           
                         />
                       </v-col>
@@ -456,7 +471,7 @@
                           label="Date fin"
                           type="date"
                           locale="fr"
-                            @blur="check_age"
+                            prepend-icon="mdi-calendar"
                           
                         />
                       </v-col>            
@@ -528,7 +543,8 @@
                           label="Lieu"
                            :rules="[v => !!v || msgrules]"
                            maxlength="25"
-                           required                          
+                           required
+                            prepend-icon="mdi-map-marker"                          
                         />
                       </v-col> 
                       <v-col
@@ -573,7 +589,7 @@
                            :rules="[v => !!v || msgrules]"
                            maxlength="6"
                            required
-                          
+                           prepend-icon="mdi-calendar"
                         />
                       </v-col>
               
@@ -615,9 +631,8 @@
                         <v-text-field                    
                           v-model="prof.titref"                        
                           label="Titre"
-                           :rules="[v => !!v || msgrules]"
-                           maxlength="25"
-                           required                          
+                            maxlength="50"
+                                                   
                         />
                       </v-col> 
                       <v-col
@@ -628,9 +643,8 @@
                         <v-text-field                    
                           v-model="prof.description"                        
                           label="Description"
-                           :rules="[v => !!v || msgrules]"
-                           maxlength="55"                         
-                           required                          
+                            maxlength="55"                         
+                            prepend-icon="mdi-pencil"                         
                         />
                       </v-col>                     
                       
@@ -772,11 +786,12 @@
           <v-col cols="12" sm="6" md="6" > 
         
      <v-btn 
-        v-if="nifvalid" 
+        :disabled="prof.nom===''|| prof.prenom ===''||  prof.commune_n ===''||  prof.commune_h ===''|| prof.lieunais === '' || prof.date_naissance === null"
+              
             class="mb-2 mt-4"            
             color="primary" 
            small
-              dark             
+              dark                            
              @click="store_prof"      
             >  
             <v-progress-circular
@@ -784,9 +799,9 @@
                             :size="20"
                             :width="3"
                             color="white"
-                            indeterminate
+                            indeterminate                            
                             />        
-          Soumettre         
+                    Soumettre         
         </v-btn>  
            
     </v-col>
@@ -800,12 +815,13 @@
       initiallyOpen: ['william'], 
  // date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
       
-      prof:{  type:'',  nif:0, telephone:'', statut:'', lieunais:'',  adresse:'',  cin:'', nom:'', prenom:'',   sexe:0, commune_n:'',
+      prof:{  type:'',  nif:'', telephone:'', statut:'', lieunais:'',  adresse:'',  cin:'', nom:'', prenom:'',   sexe:0, commune_n:'',
       commune_h:'', dept_n:'', dept_h:'', email: '', date_naissance:null,  dateAffectation:null, date_EFonction:null, date_nomination:null, code_budgetaire:''
-      ,statutmat:'', titre:'',  titref:'',description:'', nomf:'',lieuf:''},     
+      ,statutmat:'', titre:'',  titref:'',description:'', nomf:'',lieuf:'', nUniversitaire:'',nClassique:''},     
     
     label: "NIF",
-    focus: false,   
+    focus: false,  
+    choixAutre : false, 
     visible: false,
     date: new Date().toISOString().substr(0, 8) ,// 05/09/2019 
      departements:[],      
@@ -819,7 +835,7 @@
               (v) => !!v || 'E-mail obligatoire',
               (v) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail doit être valide'
             ],
-              formations :[{nomf:'', lieu:'', date_debut:null, date_fin:null, autre:''}],
+              formations :[{nomf:'', lieu:'', date_debut:null, date_fin:null}],
               formationsP :[{titre:'', duree:'',lieu:'',organisateur:'',datef:''}],
             
         menu: false,
@@ -965,14 +981,15 @@
             this.reformatTreeData()
 
          this.visible = true 
-          this.formations.nomf = this.formations.autre
+          
          const donnees ={formation:this.formations, prof:this.prof, formatp:this.formationsP,
-                        affectation:this.affectations, matiere:this.matieres, niveau:this.niveaux, formprof:this.formatc}
+                        affectation:this.affectations, matiere:this.matieres, niveau:this.niveaux, 
+                        formprof:this.formatc, formatS:this.formatS}
 
           this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')           
         await this.$axios.post('store-enseignant',JSON.stringify(donnees)).then(res => {        
-          if(res.data.reponse === 1){
-                this.$notifier.showMessage({content:'Succes', color:'success'})
+          if(res.data.reponse === 1){ 
+                   this.resetObjectField(this.prof)          
                 this.$notifier.showMessage({content:'Succès!!!', color:'success'})     
                 if(res.data.message.length > 0) 
                 this.$notifier.showMessage({content:res.data.message, color:'error'})  
@@ -987,7 +1004,7 @@
 
 
      async checkNif(){
-        if((this.prof.nif).length < 12 || this.prof.nif==='000-000-000-0'){
+        if(this.prof.nif.length < 12 || this.prof.nif==='000-000-000-0'){
            this.$notifier.showMessage({content:' NIF invalide', color:'error'}) 
            return false
         }
@@ -1003,9 +1020,19 @@
           this.$notifier.showMessage({content:'Ce prof a ete deja insere', color:'error'})   
         })
       },
+      resetObjectField(object){
+          const keystab = Object.keys(object)
+          keystab.forEach((k)=>{
+            if(typeof object[k] === 'string')
+            object[k] = ''
+            else 
+            object[k] = null
+          })
+          return object  
+},
 
   ajouterFormation(){
-               this.formations.push({nomf:'', lieu:'', date_debut:null, date_fin:null, autre:''})
+               this.formations.push({nomf:'', lieu:'', date_debut:null, date_fin:null})
             },
       addFormatContinue(){
           this.formationsP.push({titre:'', duree:'',lieu:'',organisateur:'',datef:''})
@@ -1020,6 +1047,16 @@
              this.formationsP = fc                
                
             },
+
+      SelectAutre(formation){         
+        if(formation.nomf === 'Autres'){         
+          this.choixAutre = true
+          formation.nomf = ''
+        }
+        else
+        this.choixAutre = false
+
+      },
       createTreeRoot(){
         if(this.items.length > 0)
         this.items =[]
@@ -1284,11 +1321,7 @@ getEtiquette(idnode){
           if(parseInt(this.getAge(this.prof.date_naissance)) < 22){          
             this.$notifier.showMessage({content: 'Votre age ne correspond pas a ce poste!', color: 'error' })     
                   return false;
-           } 
-           if(parseInt(this.getAge(this.formation.date_debut)) > parseInt(this.formation.date_fin)){          
-            this.$notifier.showMessage({content: 'La date debut ne peut pas etre superieure a la date fin !', color: 'error' })     
-                  return false;
-           }         
+           }                   
            return true;
       },
 

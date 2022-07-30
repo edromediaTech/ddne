@@ -75,6 +75,10 @@ export default {
     '@nuxtjs/axios',
     // https://go.nuxtjs.dev/content
     '@nuxt/content',
+    ['nuxt-gmaps', {
+      key: 'AIzaSyBcQEceCAzpnyDirjZ82Zhab48yV0H331E',
+      // you can use libraries: ['places']
+    }]
     
    // '@nuxtjs/proxy'
   ],
@@ -82,8 +86,8 @@ export default {
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
  
    axios: {
-       baseURL : 'http://ddne-back.loc/api/',
-       //  baseURL : 'https://base.suped-ddne.com/api/',
+        // baseURL : 'http://ddne-back.loc/api/',
+         baseURL : 'https://base.suped-ddne.com/api/',
       // credentials: false,
       // proxy: true           
   },

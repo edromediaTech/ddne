@@ -174,10 +174,12 @@
                       :manual-pagination="false"
                       pdf-format="legal"
                       pdf-orientation="landscape"
-                      pdf-content-width="1350px"                  
+                      pdf-content-width="1350px" 
+                                
                       >
                         <template slot="pdf-content"  class="sectpdf">                             
-                            <table-print-decision :eleves="eleves" :classe="classe" :texte="texte" :info-ecole="infoEcole" />                             
+                            <table-print-decision :eleves="eleves" :classe="classe" :texte="texte" :info-ecole="infoEcole"  />                             
+                            <!-- <table-print-decision :eleves="eleves.slice(0,60)" :classe="classe" :texte="texte" :info-ecole="infoEcole"  />                              -->
                         </template>
                     </vue-html2pdf>
                   </client-only>             
@@ -335,8 +337,7 @@ import tablePrintDecision from '~/components/tablePrintDecision.vue';
     },
     
     created () {
-      this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')
-      
+      this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('authToken')      
     },
 
     mounted () {
@@ -350,6 +351,7 @@ import tablePrintDecision from '~/components/tablePrintDecision.vue';
            this.infoEcole = (this.ecoles.find(el => el.value === this.ecole)).text +' - '+ (this.classes.find(el => el.value === this.classe)).text
             this.texte = 'Decision de fin d\'année '+localStorage.anac 
             this.$refs.html2Pdf.generatePdf()
+          // this.get_array_part(this.eleves, 0, 50)
             this.visible = false
         },
 
@@ -359,6 +361,16 @@ import tablePrintDecision from '~/components/tablePrintDecision.vue';
                   this.departements = response.data;
                   })
              },
+
+        accessDecision(anac){
+                const anacdec = anac.substring(5,9)
+                const anneecurr = new Date().toLocaleDateString('en-GB', {year : 'numeric'});
+                let mois= new Date().toLocaleDateString('en-GB', {month : 'numeric'});
+                mois = parseInt(mois) + 1
+                if(anacdec === anneecurr && mois < 6) 
+                return false
+                return true  
+        },
 
            getData (data, value){
               if (data === 'departements'){
@@ -458,6 +470,10 @@ import tablePrintDecision from '~/components/tablePrintDecision.vue';
       },
 
       generate (){
+        // if(this.accessDecision(localStorage.anac) === false){
+        //   this.$notifier.showMessage({content:'Il est trop pour generer la decision.',  color: 'error' })
+        //   return false
+        // }
         const data = this.ecole+'|'+this.classe+'|'+localStorage.anac;
     this.$axios.get('generate-formation/'+ data).then((response)=>{
       console.log(response.data);
@@ -486,6 +502,12 @@ import tablePrintDecision from '~/components/tablePrintDecision.vue';
 
   update_decision (eleve){
       let data = {}
+       if(this.accessDecision(localStorage.anac) === false){
+          this.$notifier.showMessage({content:'Il est trop tot pour realiser cette operation .',  color: 'error' })
+           eleve.moyenne = '0'
+            eleve.mention ="Select mention"
+          return false
+        }
        if(eleve.moyenne >9.99){
            this.$notifier.showMessage({ content: 'Vérifier la moyenne', color: 'error' })           
           return false;
@@ -552,8 +574,19 @@ import tablePrintDecision from '~/components/tablePrintDecision.vue';
       this.snackColor = "info";
       this.snackText = "Dialog opened";
     },
+
     close() {
       console.log("Dialog closed");
+    },
+
+    get_array_part(array,deb,fin){
+      const tab= []
+      for(let i=deb; i <=fin; i++){
+        tab.push(array[i])
+      }
+      console.log(tab)
+      return tab
+
     },
 
       getClasses () { 

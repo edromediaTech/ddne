@@ -313,7 +313,7 @@ export default {
           e.Sexe = 1
           else
           e.Sexe = 0
-        console.log(this.communes)
+        
          this.$refs.modalEcole.ec = {id:e.id, tel: e.tel,  email: e.Email_Ecole, telephone:e.Telephone, fondateur:e.Fondateur,  sigle:e.Sigle,  
          niveau:e.niveau1,  categorie:e.categorie, milieu:e.milieu, secteur:e.secteur, vacation:e.vacation, 
          location:e.location,   adresse: e.Adresse, longitude:e.Longitude, latitude:e.Latitude, code:e.Code,

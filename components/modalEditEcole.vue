@@ -376,8 +376,8 @@
                            <v-col   cols="12"  md="4"  >
             <v-text-field   v-model="direct.adressed"  :rules="nameRules"    label="Adresse" required ></v-text-field>
             </v-col>
-
         </v-row>
+
          <!-- *************** Etat batiment **********************************  -->
          <v-row v-if="part.id===3">
           <v-row v-if="questions.length >0" class="ma-2">                   
@@ -396,7 +396,7 @@
                                       
                        <span v-else > 
                                                
-                           <v-col cols="12" md="12" sm="6" class="carte">                      
+                           <v-col cols="12" md="6" sm="6" class="carte">                      
                                      <label><b>{{q.libelle}}* </b></label>                       
                                <span v-for="(opt) in options" :key="opt.value">
                                   <span v-if="opt.question_id === q.id" >                                 

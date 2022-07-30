@@ -281,7 +281,7 @@
 </template>
 <script>
 // import tablePrintDecision from '~/components/tablePrintDecision.vue';
-
+import {mapGetters } from 'vuex'
   export default {
  // components: { tablePrintDecision },   
    middleware: 'operateur',  
@@ -328,6 +328,7 @@
      
     }),
     computed : {
+       ...mapGetters('auth', ['user']),
         headers (){
           const  headers= [
        
@@ -505,8 +506,25 @@
                   })
   },
 
+   accessDecision(anac){
+                const anacdec = anac.substring(5,9)
+                const anneecurr = new Date().toLocaleDateString('en-GB', {year : 'numeric'});
+                let mois= new Date().toLocaleDateString('en-GB', {month : 'numeric'});
+                mois = parseInt(mois) + 1
+                if(anacdec === anneecurr && mois < 6) 
+                return false
+                return true  
+        },
+
   update_decision (eleve){
       let data = {}
+       if(this.accessDecision(this.an) === false){
+          
+          this.$notifier.showMessage({content: this.user.name +' , Voulez-vous vérifiez l\'année scolaire.',  color: 'error' })
+           eleve.moyenne = '0'
+            eleve.mention ="Select mention"
+          return false
+        }
        if(eleve.moyenne >9.99){
            this.$notifier.showMessage({ content: 'Vérifier la moyenne', color: 'error' })           
           return false;
